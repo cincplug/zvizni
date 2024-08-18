@@ -6,7 +6,7 @@ import Controls from "./components/Controls";
 export default function Home() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [volume, setVolume] = useState(1);
-  const [visualizationType, setVisualizationType] = useState("stripes");
+  const [visualizationType, setVisualizationType] = useState("flower");
   const [analyser, setAnalyser] = useState(null);
 
   const handleAnalysisStateChange = (isAnalyzing, analyser) => {

@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 
-const visualizationModes = ["stripes", "line", "flower"];
+const visualizationModes = ["line", "flower"];
 
 const Controls = ({
   isAnalyzing,
