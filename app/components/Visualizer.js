@@ -1,14 +1,20 @@
 import React, { useEffect, useRef } from "react";
 
-const CANVAS_WIDTH = 800;
-const CANVAS_HEIGHT = 400;
-
 const Visualizer = ({ analyser, visualizationType }) => {
   const canvasRef = useRef(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const canvasCtx = canvas.getContext("2d");
+
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
     const bufferLength = analyser.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
 
@@ -69,14 +75,17 @@ const Visualizer = ({ analyser, visualizationType }) => {
     };
 
     draw();
+
+    return () => {
+      window.removeEventListener("resize", resizeCanvas);
+    };
   }, [analyser, visualizationType]);
 
   return (
     <canvas
       className="bg-slate-300"
       ref={canvasRef}
-      width={CANVAS_WIDTH}
-      height={CANVAS_HEIGHT}
+      style={{ width: "100vw", height: "100vh" }}
     ></canvas>
   );
 };
