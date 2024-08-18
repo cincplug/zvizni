@@ -46,6 +46,19 @@ const Analyzer = () => {
       });
   };
 
+  const stopAnalyzing = () => {
+    if (audioStream) {
+      audioStream.getTracks().forEach(track => track.stop());
+    }
+
+    if (audioContextRef.current) {
+      audioContextRef.current.close();
+    }
+
+    setAudioStream(null);
+    setIsAnalyzing(false);
+  };
+
   const handleVolumeChange = (e) => {
     const newVolume = e.target.value;
     setVolume(newVolume);
@@ -60,18 +73,17 @@ const Analyzer = () => {
 
   return (
     <div className="flex flex-col items-center">
-      <div className="flex flex-col items-center mb-4">
+      <div className="flex flex-col items-center mb-2">
         <h1 className="text-2xl font-bold mb-0">Zvuk</h1>
         <p>Audio analyzer prototype</p>
       </div>
-      {!isAnalyzing ? (
-        <button
-          onClick={startAnalyzing}
-          className="px-4 py-2 bg-blue-500 text-white rounded"
-        >
-          Start Analyzing
-        </button>
-      ) : (
+      <button
+        onClick={isAnalyzing ? stopAnalyzing : startAnalyzing}
+        className={`px-4 py-2 mb-4 rounded ${isAnalyzing ? 'bg-red-500' : 'bg-blue-500'} text-white`}
+      >
+        {isAnalyzing ? 'Stop Analysis' : 'Start Analyzing'}
+      </button>
+      {isAnalyzing && (
         <>
           <Controls
             visualizationType={visualizationType}
