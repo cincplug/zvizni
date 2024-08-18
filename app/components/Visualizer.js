@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 
-const CANVAS_WIDTH = 800; // Canvas breedte in pixels
-const CANVAS_HEIGHT = 400; // Canvas hoogte in pixels
+const CANVAS_WIDTH = 800;
+const CANVAS_HEIGHT = 400;
 
 const Visualizer = ({ analyser, visualizationType }) => {
   const canvasRef = useRef(null);
@@ -15,10 +15,8 @@ const Visualizer = ({ analyser, visualizationType }) => {
     const draw = () => {
       requestAnimationFrame(draw);
 
-      // Verkrijg de data van de frequentieanalyse
       analyser.getByteFrequencyData(dataArray);
 
-      // Maak de canvas schoon voor nieuwe tekening
       canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
 
       if (visualizationType === "stripes") {
@@ -28,18 +26,13 @@ const Visualizer = ({ analyser, visualizationType }) => {
 
         for (let i = 0; i < bufferLength; i++) {
           barHeight = dataArray[i] * (canvas.height / 256);
-
           canvasCtx.fillStyle = `rgb(${barHeight + 100}, 50, 50)`;
           canvasCtx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
-
           x += barWidth + 1;
         }
       } else if (visualizationType === "line") {
         canvasCtx.beginPath();
-        canvasCtx.moveTo(
-          0,
-          canvas.height - (dataArray[0] * canvas.height) / 256
-        );
+        canvasCtx.moveTo(0, canvas.height - (dataArray[0] * canvas.height) / 256);
 
         for (let i = 1; i < bufferLength; i++) {
           const y = canvas.height - (dataArray[i] * canvas.height) / 256;
@@ -48,6 +41,28 @@ const Visualizer = ({ analyser, visualizationType }) => {
         }
 
         canvasCtx.strokeStyle = "rgb(50, 50, 200)";
+        canvasCtx.lineWidth = 2;
+        canvasCtx.stroke();
+      } else if (visualizationType === "flower") {
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const maxRadius = Math.min(centerX, centerY) * 4;
+
+        canvasCtx.beginPath();
+        for (let i = 0; i < bufferLength; i++) {
+          const radius = (dataArray[i] / 256) * maxRadius;
+          const angle = (i / bufferLength) * i;
+          const x = centerX + radius * Math.cos(angle);
+          const y = centerY + radius * Math.sin(angle);
+
+          if (i === 0) {
+            canvasCtx.moveTo(x, y);
+          } else {
+            canvasCtx.lineTo(x, y);
+          }
+        }
+        canvasCtx.closePath();
+        canvasCtx.strokeStyle = "rgb(50, 0, 100)";
         canvasCtx.lineWidth = 2;
         canvasCtx.stroke();
       }

@@ -33,13 +33,23 @@ const Controls = ({
         </button>
         <button
           onClick={() => onVisualizationChange("line")}
-          className={`px-4 py-2 rounded ${
+          className={`px-4 py-2 mr-2 rounded ${
             visualizationType === "line"
               ? "bg-blue-600 text-white"
               : "bg-gray-300"
           }`}
         >
           Line
+        </button>
+        <button
+          onClick={() => onVisualizationChange("flower")}
+          className={`px-4 py-2 rounded ${
+            visualizationType === "flower"
+              ? "bg-blue-600 text-white"
+              : "bg-gray-300"
+          }`}
+        >
+          Flower
         </button>
       </div>
     </div>
