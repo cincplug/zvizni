@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 
-const CANVAS_WIDTH = 500; // Canvas breedte in pixels
-const CANVAS_HEIGHT = 300; // Canvas hoogte in pixels
+const CANVAS_WIDTH = 800; // Canvas breedte in pixels
+const CANVAS_HEIGHT = 400; // Canvas hoogte in pixels
 
 const Visualizer = ({ analyser, visualizationType }) => {
   const canvasRef = useRef(null);
@@ -58,6 +58,7 @@ const Visualizer = ({ analyser, visualizationType }) => {
 
   return (
     <canvas
+      className="bg-slate-300"
       ref={canvasRef}
       width={CANVAS_WIDTH}
       height={CANVAS_HEIGHT}

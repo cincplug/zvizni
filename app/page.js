@@ -73,7 +73,7 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-16">
+    <main className="flex min-h-screen flex-col items-center justify-center p-12 bg-slate-200">
       <h1 className="text-2xl font-bold mb-4">Zvuk - Audio Analyzer</h1>
       <div className="flex flex-col items-center">
         <Analyzer
