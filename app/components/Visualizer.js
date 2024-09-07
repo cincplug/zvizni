@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 
 const Visualizer = ({ analyser, visualizationType }) => {
   const canvasRef = useRef(null);
@@ -35,6 +35,14 @@ const Visualizer = ({ analyser, visualizationType }) => {
       max: 10,
       step: 0.1,
       value: 2
+    },
+    {
+      name: "sensitivity",
+      label: "Sensitivity",
+      min: 1,
+      max: 100,
+      step: 0.1,
+      value: 5
     }
   ];
 
@@ -44,6 +52,14 @@ const Visualizer = ({ analyser, visualizationType }) => {
   }, {});
 
   const [settings, setSettings] = useState(initialSettings);
+
+  const handleChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setSettings((prevSettings) => ({
+      ...prevSettings,
+      [name]: parseFloat(value)
+    }));
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -60,15 +76,27 @@ const Visualizer = ({ analyser, visualizationType }) => {
     const bufferLength = analyser.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
 
+    let hue = 0;
+
     const draw = () => {
       requestAnimationFrame(draw);
 
       analyser.getByteFrequencyData(dataArray);
 
-      canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+      canvasCtx.fillStyle = "rgba(255, 255, 255, 0.01)";
+      canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+      hue = (hue + 1) % 360;
 
       const startFrequency = 40;
       const endFrequency = bufferLength - startFrequency;
+
+      const averageAmplitude =
+        dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
+      const minRadius = Math.max(
+        (averageAmplitude / 256) * settings.maxRadius * 0.5,
+        settings.sensitivity
+      );
 
       const visualizations = {
         line: () => {
@@ -83,19 +111,18 @@ const Visualizer = ({ analyser, visualizationType }) => {
             const x = ((i + startFrequency) / bufferLength) * canvas.width;
             canvasCtx.lineTo(x, y);
           });
-
-          canvasCtx.strokeStyle = "rgb(50, 50, 200)";
-          canvasCtx.lineWidth = 2;
-          canvasCtx.stroke();
         },
         flower: () => {
           const centerX = canvas.width / 2;
           const centerY = canvas.height / 2;
           const maxRadius = Math.min(centerX, centerY) * settings.maxRadius;
 
+          let prevX = centerX;
+          let prevY = centerY;
+
           canvasCtx.beginPath();
           dataArray.slice(startFrequency, endFrequency).forEach((value, i) => {
-            const radius = (value / 256) * maxRadius;
+            const radius = Math.max((value / 256) * maxRadius, minRadius);
             const angle =
               ((i + startFrequency) / bufferLength) *
               settings.angleModifier *
@@ -103,16 +130,17 @@ const Visualizer = ({ analyser, visualizationType }) => {
             const x = centerX + radius * Math.cos(angle);
             const y = centerY + radius * Math.sin(angle);
 
-            if (i === 0) {
-              canvasCtx.moveTo(x, y);
-            } else {
-              canvasCtx.lineTo(x, y);
-            }
+            const avgX = (prevX + x) / 2;
+            const avgY = (prevY + y) / 2;
+
+            canvasCtx.lineTo(avgX, avgY);
+
+            prevX = x;
+            prevY = y;
           });
           canvasCtx.closePath();
-          canvasCtx.strokeStyle = "rgb(50, 0, 100)";
-          canvasCtx.lineWidth = 2;
-          canvasCtx.stroke();
+          canvasCtx.fillStyle = `hsla(${hue}, 100%, 50%, 0.5)`;
+          canvasCtx.fill();
         }
       };
 
@@ -128,14 +156,6 @@ const Visualizer = ({ analyser, visualizationType }) => {
       window.removeEventListener("resize", resizeCanvas);
     };
   }, [analyser, visualizationType, settings]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setSettings((prevSettings) => ({
-      ...prevSettings,
-      [name]: parseFloat(value)
-    }));
-  };
 
   return (
     <>
