@@ -5,20 +5,12 @@ const Visualizer = ({ analyser, visualizationType }) => {
 
   const settingsConfig = [
     {
-      name: "centerModifierX",
-      label: "Center Modifier X",
-      min: 0,
-      max: 2,
-      step: 0.01,
-      value: 1
-    },
-    {
-      name: "centerModifierY",
-      label: "Center Modifier Y",
-      min: 0,
-      max: 2,
-      step: 0.01,
-      value: 1
+      name: "minRadius",
+      label: "Min Radius",
+      min: 1,
+      max: 100,
+      step: 0.1,
+      value: 5
     },
     {
       name: "maxRadius",
@@ -29,20 +21,20 @@ const Visualizer = ({ analyser, visualizationType }) => {
       value: 4
     },
     {
+      name: "frameRotation",
+      label: "Frame Rotation",
+      min: 0,
+      max: 30,
+      step: 0.1,
+      value: 0
+    },
+    {
       name: "angleModifier",
       label: "Angle Modifier",
       min: 1,
       max: 10,
       step: 0.1,
       value: 2
-    },
-    {
-      name: "sensitivity",
-      label: "Sensitivity",
-      min: 1,
-      max: 100,
-      step: 0.1,
-      value: 5
     }
   ];
 
@@ -77,16 +69,24 @@ const Visualizer = ({ analyser, visualizationType }) => {
     const dataArray = new Uint8Array(bufferLength);
 
     let hue = 0;
+    let rotationAngle = 0;
 
     const draw = () => {
       requestAnimationFrame(draw);
 
       analyser.getByteFrequencyData(dataArray);
 
+      canvasCtx.save();
+      canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+      canvasCtx.translate(canvas.width / 2, canvas.height / 2);
+      canvasCtx.rotate((rotationAngle * Math.PI) / 180);
+      canvasCtx.translate(-canvas.width / 2, -canvas.height / 2);
+
       canvasCtx.fillStyle = "rgba(255, 255, 255, 0.01)";
       canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
       hue = (hue + 1) % 360;
+      rotationAngle = (rotationAngle + settings.frameRotation) % 360;
 
       const startFrequency = 40;
       const endFrequency = bufferLength - startFrequency;
@@ -95,7 +95,7 @@ const Visualizer = ({ analyser, visualizationType }) => {
         dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
       const minRadius = Math.max(
         (averageAmplitude / 256) * settings.maxRadius * 0.5,
-        settings.sensitivity
+        settings.minRadius
       );
 
       const visualizations = {
@@ -139,7 +139,7 @@ const Visualizer = ({ analyser, visualizationType }) => {
             prevY = y;
           });
           canvasCtx.closePath();
-          canvasCtx.fillStyle = `hsla(${hue}, 100%, 50%, 0.5)`;
+          canvasCtx.fillStyle = `hsla(${hue}, 100%, 80%, 0.5)`;
           canvasCtx.fill();
         }
       };
@@ -148,6 +148,8 @@ const Visualizer = ({ analyser, visualizationType }) => {
       if (visualize) {
         visualize();
       }
+
+      canvasCtx.restore();
     };
 
     draw();
@@ -160,11 +162,11 @@ const Visualizer = ({ analyser, visualizationType }) => {
   return (
     <>
       <canvas
-        className="bg-slate-300"
+        className="bg-slate-800"
         ref={canvasRef}
         style={{ width: "100vw", height: "100vh" }}
       ></canvas>
-      <div className="fixed top-4 left-4 shadow-lg rounded p-4 bg-white bg-opacity-80 grid grid-cols-12 gap-4 w-64 items-center">
+      <div className="fixed top-4 left-4 shadow-lg rounded p-4 bg-slate-700 text-slate-100 bg-opacity-80 grid grid-cols-12 gap-4 w-64 items-center">
         {settingsConfig.map((setting) => (
           <React.Fragment key={setting.name}>
             <label className="col-span-5">{setting.label}</label>

@@ -59,11 +59,13 @@ const Controls = ({
     <div
       className={`flex flex-col items-center mb-4 ${
         isAnalyzing
-          ? "fixed top-4 right-4 bg-white p-4 rounded shadow-lg"
+          ? "fixed top-4 right-4 bg-slate-700 text-slate-100 p-4 rounded shadow-lg"
           : "justify-center"
       }`}
     >
-      {!isAnalyzing && <h1 className="text-2xl font-bold mb-4">Zvuk - Audio Analyzer</h1>}
+      {!isAnalyzing && (
+        <h1 className="text-2xl font-bold mb-4">Zvuk - Audio Analyzer</h1>
+      )}
       <button
         onClick={isAnalyzing ? stopAnalyzing : startAnalyzing}
         className={`px-4 py-2 mb-4 rounded ${
