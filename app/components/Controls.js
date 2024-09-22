@@ -7,8 +7,6 @@ const Controls = ({
   onAnalysisStateChange,
   visualizationType,
   onVisualizationChange,
-  volume,
-  onVolumeChange
 }) => {
   const audioContextRef = useRef(null);
   const sourceRef = useRef(null);
@@ -38,7 +36,7 @@ const Controls = ({
         analyserRef.current.connect(audioContextRef.current.destination);
 
         analyserRef.current.fftSize = 512;
-        gainNodeRef.current.gain.value = volume;
+        gainNodeRef.current.gain.value = 1;
 
         onAnalysisStateChange(true, analyserRef.current);
       })
@@ -76,18 +74,6 @@ const Controls = ({
       </button>
       {isAnalyzing && (
         <>
-          <label className="block mb-2">
-            Volume:
-            <input
-              type="range"
-              min="0"
-              max="2"
-              step="0.01"
-              value={volume}
-              onChange={onVolumeChange}
-              className="ml-2"
-            />
-          </label>
           <div className="flex justify-center">
             {visualizationModes.map((mode) => (
               <button
