@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 
-const visualizationModes = ["line", "flower"];
+const visualizationModes = ["flower", "squares", "circles", "triangles"];
 
 const Controls = ({
   isAnalyzing,
@@ -82,7 +82,7 @@ const Controls = ({
                 className={`px-4 py-2 mr-2 rounded ${
                   visualizationType === mode
                     ? "bg-blue-600 text-white"
-                    : "bg-gray-300"
+                    : "bg-slate-500"
                 }`}
               >
                 {mode.charAt(0).toUpperCase() + mode.slice(1)}

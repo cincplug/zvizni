@@ -98,51 +98,63 @@ const Visualizer = ({ analyser, visualizationType }) => {
         settings.minRadius
       );
 
+      const drawShape = (drawFn) => {
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const maxRadius = Math.min(centerX, centerY) * settings.maxRadius;
+      
+        let prevX = centerX;
+        let prevY = centerY;
+      
+        canvasCtx.beginPath();
+        dataArray.slice(startFrequency, endFrequency).forEach((value, i) => {
+          const size = Math.max((value / 256) * maxRadius, minRadius);
+          const angle =
+            ((i + startFrequency) / bufferLength) *
+            settings.angleModifier *
+            Math.PI;
+          const x = centerX + size * Math.cos(angle);
+          const y = centerY + size * Math.sin(angle);
+      
+          const avgX = (prevX + x) / 2;
+          const avgY = (prevY + y) / 2;
+      
+          drawFn(avgX, avgY, size);
+      
+          prevX = x;
+          prevY = y;
+        });
+        canvasCtx.closePath();
+        canvasCtx.fillStyle = `hsla(${hue}, 100%, 80%, 0.5)`;
+        canvasCtx.fill();
+      };
+      
       const visualizations = {
-        line: () => {
-          canvasCtx.beginPath();
-          canvasCtx.moveTo(
-            0,
-            canvas.height - (dataArray[startFrequency] * canvas.height) / 256
-          );
-
-          dataArray.slice(startFrequency, endFrequency).forEach((value, i) => {
-            const y = canvas.height - (value * canvas.height) / 256;
-            const x = ((i + startFrequency) / bufferLength) * canvas.width;
+        flower: () => {
+          drawShape((x, y, size) => {
             canvasCtx.lineTo(x, y);
           });
         },
-        flower: () => {
-          const centerX = canvas.width / 2;
-          const centerY = canvas.height / 2;
-          const maxRadius = Math.min(centerX, centerY) * settings.maxRadius;
-
-          let prevX = centerX;
-          let prevY = centerY;
-
-          canvasCtx.beginPath();
-          dataArray.slice(startFrequency, endFrequency).forEach((value, i) => {
-            const radius = Math.max((value / 256) * maxRadius, minRadius);
-            const angle =
-              ((i + startFrequency) / bufferLength) *
-              settings.angleModifier *
-              Math.PI;
-            const x = centerX + radius * Math.cos(angle);
-            const y = centerY + radius * Math.sin(angle);
-
-            const avgX = (prevX + x) / 2;
-            const avgY = (prevY + y) / 2;
-
-            canvasCtx.lineTo(avgX, avgY);
-
-            prevX = x;
-            prevY = y;
+        squares: () => {
+          drawShape((x, y, size) => {
+            canvasCtx.rect(x - size / 2, y - size / 2, size, size);
           });
-          canvasCtx.closePath();
-          canvasCtx.fillStyle = `hsla(${hue}, 100%, 80%, 0.5)`;
-          canvasCtx.fill();
+        },
+        triangles: () => {
+          drawShape((x, y, size) => {
+            canvasCtx.moveTo(x, y - size / 2);
+            canvasCtx.lineTo(x - size / 2, y + size / 2);
+            canvasCtx.lineTo(x + size / 2, y + size / 2);
+            canvasCtx.closePath();
+          });
+        },
+        circles: () => {
+          drawShape((x, y, size) => {
+            canvasCtx.moveTo(x + size / 2, y);
+            canvasCtx.arc(x, y, size / 2, 0, Math.PI * 2);
+          });
         }
-      };
+      };      
 
       const visualize = visualizations[visualizationType];
       if (visualize) {
