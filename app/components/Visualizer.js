@@ -1,42 +1,8 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
+import { settingsConfig } from "../settingsConfig";
 
 const Visualizer = ({ analyser, visualizationType }) => {
   const canvasRef = useRef(null);
-
-  const settingsConfig = [
-    {
-      name: "minRadius",
-      label: "Min Radius",
-      min: 1,
-      max: 100,
-      step: 0.1,
-      value: 5
-    },
-    {
-      name: "maxRadius",
-      label: "Max Radius",
-      min: 1,
-      max: 10,
-      step: 0.1,
-      value: 4
-    },
-    {
-      name: "frameRotation",
-      label: "Frame Rotation",
-      min: 0,
-      max: 30,
-      step: 0.1,
-      value: 0
-    },
-    {
-      name: "angleModifier",
-      label: "Angle Modifier",
-      min: 1,
-      max: 10,
-      step: 0.1,
-      value: 2
-    }
-  ];
 
   const initialSettings = settingsConfig.reduce((acc, setting) => {
     acc[setting.name] = setting.value;

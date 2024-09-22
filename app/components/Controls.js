@@ -1,4 +1,5 @@
 import React, { useRef } from "react";
+import { settingsConfig } from "../settingsConfig";
 
 const visualizationModes = [
   "flower",
@@ -21,41 +22,6 @@ const Controls = ({
   const sourceRef = useRef(null);
   const analyserRef = useRef(null);
   const gainNodeRef = useRef(null);
-
-  const settingsConfig = [
-    {
-      name: "minRadius",
-      label: "Min Radius",
-      min: 1,
-      max: 100,
-      step: 0.1,
-      value: settings.minRadius
-    },
-    {
-      name: "maxRadius",
-      label: "Max Radius",
-      min: 1,
-      max: 10,
-      step: 0.1,
-      value: settings.maxRadius
-    },
-    {
-      name: "frameRotation",
-      label: "Frame Rotation",
-      min: 0,
-      max: 30,
-      step: 0.1,
-      value: settings.frameRotation
-    },
-    {
-      name: "angleModifier",
-      label: "Angle Modifier",
-      min: 1,
-      max: 10,
-      step: 0.1,
-      value: settings.angleModifier
-    }
-  ];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -155,12 +121,12 @@ const Controls = ({
                   min={setting.min}
                   max={setting.max}
                   step={setting.step}
-                  value={setting.value}
+                  value={settings[setting.name]}
                   onChange={handleChange}
                   className="col-span-5"
                 />
                 <span className="col-span-2 text-right text-sm">
-                  {setting.value}
+                  {settings[setting.name]}
                 </span>
               </React.Fragment>
             ))}
