@@ -91,8 +91,15 @@ const Visualizer = ({ analyser, visualizationType }) => {
           prevY = y;
         });
         canvasCtx.closePath();
+
         canvasCtx.fillStyle = `hsla(${hue}, 100%, 80%, 0.5)`;
         canvasCtx.fill();
+
+        if (settings.border > 0) {
+          canvasCtx.lineWidth = settings.border;
+          canvasCtx.strokeStyle = "rgb(30, 41, 59)"; 
+          canvasCtx.stroke();
+        }
       };
 
       const visualizations = {

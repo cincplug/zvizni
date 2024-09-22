@@ -30,5 +30,13 @@ export const settingsConfig = [
     max: 10,
     step: 0.1,
     value: 2
+  },
+  {
+    name: "border",
+    label: "Border",
+    min: 0,
+    max: 10,
+    step: 1,
+    value: 1
   }
 ];
