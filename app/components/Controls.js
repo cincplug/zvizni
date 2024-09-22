@@ -7,11 +7,56 @@ const Controls = ({
   onAnalysisStateChange,
   visualizationType,
   onVisualizationChange,
+  settings,
+  onSettingsChange
 }) => {
   const audioContextRef = useRef(null);
   const sourceRef = useRef(null);
   const analyserRef = useRef(null);
   const gainNodeRef = useRef(null);
+
+  const settingsConfig = [
+    {
+      name: "minRadius",
+      label: "Min Radius",
+      min: 1,
+      max: 100,
+      step: 0.1,
+      value: settings.minRadius
+    },
+    {
+      name: "maxRadius",
+      label: "Max Radius",
+      min: 1,
+      max: 10,
+      step: 0.1,
+      value: settings.maxRadius
+    },
+    {
+      name: "frameRotation",
+      label: "Frame Rotation",
+      min: 0,
+      max: 30,
+      step: 0.1,
+      value: settings.frameRotation
+    },
+    {
+      name: "angleModifier",
+      label: "Angle Modifier",
+      min: 1,
+      max: 10,
+      step: 0.1,
+      value: settings.angleModifier
+    }
+  ];
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    onSettingsChange((prevSettings) => ({
+      ...prevSettings,
+      [name]: parseFloat(value)
+    }));
+  };
 
   const startAnalyzing = () => {
     audioContextRef.current = new (window.AudioContext ||
@@ -55,38 +100,62 @@ const Controls = ({
 
   return (
     <div
-      className={`flex flex-col items-center mb-4 ${
+      className={`${
         isAnalyzing
-          ? "fixed top-4 right-4 bg-slate-700 text-slate-100 p-4 rounded shadow-lg"
-          : "justify-center"
-      }`}
+          ? "fixed top-4 right-4"
+          : "flex flex-col items-center justify-center"
+      } bg-slate-700 text-slate-100 p-4 rounded shadow-lg max-w-xs w-full`}
     >
       {!isAnalyzing && (
-        <h1 className="text-2xl font-bold mb-4">Zvuk - Audio Analyzer</h1>
+        <h1 className="text-2xl font-bold mb-4 text-center">
+          Zvuk - Audio Analyzer
+        </h1>
       )}
       <button
         onClick={isAnalyzing ? stopAnalyzing : startAnalyzing}
         className={`px-4 py-2 mb-4 rounded ${
           isAnalyzing ? "bg-red-500" : "bg-blue-500"
-        } text-white`}
+        } text-white w-full`}
       >
         {isAnalyzing ? "Stop" : "Start"}
       </button>
+
       {isAnalyzing && (
         <>
-          <div className="flex justify-center">
+          <div className="flex flex-wrap justify-center mb-4">
             {visualizationModes.map((mode) => (
               <button
                 key={mode}
                 onClick={() => onVisualizationChange(mode)}
-                className={`px-4 py-2 mr-2 rounded ${
+                className={`px-2 py-1 m-1 rounded ${
                   visualizationType === mode
                     ? "bg-blue-600 text-white"
                     : "bg-slate-500"
-                }`}
+                } text-sm`}
               >
                 {mode.charAt(0).toUpperCase() + mode.slice(1)}
               </button>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-12 gap-4">
+            {settingsConfig.map((setting) => (
+              <React.Fragment key={setting.name}>
+                <label className="col-span-5 text-sm">{setting.label}</label>
+                <input
+                  type="range"
+                  name={setting.name}
+                  min={setting.min}
+                  max={setting.max}
+                  step={setting.step}
+                  value={setting.value}
+                  onChange={handleChange}
+                  className="col-span-5"
+                />
+                <span className="col-span-2 text-right text-sm">
+                  {setting.value}
+                </span>
+              </React.Fragment>
             ))}
           </div>
         </>
