@@ -1,6 +1,13 @@
 import React, { useRef } from "react";
 
-const visualizationModes = ["flower", "squares", "circles", "triangles"];
+const visualizationModes = [
+  "flower",
+  "squares",
+  "circles",
+  "triangles",
+  "hexagons",
+  "stars"
+];
 
 const Controls = ({
   isAnalyzing,

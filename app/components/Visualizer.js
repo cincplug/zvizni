@@ -1,7 +1,57 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 
-const Visualizer = ({ analyser, visualizationType, settings }) => {
+const Visualizer = ({ analyser, visualizationType }) => {
   const canvasRef = useRef(null);
+
+  const settingsConfig = [
+    {
+      name: "minRadius",
+      label: "Min Radius",
+      min: 1,
+      max: 100,
+      step: 0.1,
+      value: 5
+    },
+    {
+      name: "maxRadius",
+      label: "Max Radius",
+      min: 1,
+      max: 10,
+      step: 0.1,
+      value: 4
+    },
+    {
+      name: "frameRotation",
+      label: "Frame Rotation",
+      min: 0,
+      max: 30,
+      step: 0.1,
+      value: 0
+    },
+    {
+      name: "angleModifier",
+      label: "Angle Modifier",
+      min: 1,
+      max: 10,
+      step: 0.1,
+      value: 2
+    }
+  ];
+
+  const initialSettings = settingsConfig.reduce((acc, setting) => {
+    acc[setting.name] = setting.value;
+    return acc;
+  }, {});
+
+  const [settings, setSettings] = useState(initialSettings);
+
+  const handleChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setSettings((prevSettings) => ({
+      ...prevSettings,
+      [name]: parseFloat(value)
+    }));
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -104,6 +154,40 @@ const Visualizer = ({ analyser, visualizationType, settings }) => {
             canvasCtx.arc(x, y, size / 2, 0, Math.PI * 2);
           });
         },
+        hexagons: () => {
+          drawShape((x, y, size) => {
+            const side = size / 2;
+            canvasCtx.moveTo(x + side * Math.cos(0), y + side * Math.sin(0));
+            for (let i = 1; i <= 6; i++) {
+              canvasCtx.lineTo(
+                x + side * Math.cos((i * 2 * Math.PI) / 6),
+                y + side * Math.sin((i * 2 * Math.PI) / 6)
+              );
+            }
+          });
+        },
+        stars: () => {
+          drawShape((x, y, size) => {
+            const spikes = 5;
+            const outerRadius = size;
+            const innerRadius = size / 2;
+            let rot = (Math.PI / 2) * 3;
+            let step = Math.PI / spikes;
+
+            canvasCtx.moveTo(x, y - outerRadius);
+            for (let i = 0; i < spikes; i++) {
+              let xOuter = x + Math.cos(rot) * outerRadius;
+              let yOuter = y + Math.sin(rot) * outerRadius;
+              canvasCtx.lineTo(xOuter, yOuter);
+              rot += step;
+
+              let xInner = x + Math.cos(rot) * innerRadius;
+              let yInner = y + Math.sin(rot) * innerRadius;
+              canvasCtx.lineTo(xInner, yInner);
+              rot += step;
+            }
+          });
+        }
       };
 
       const visualize = visualizations[visualizationType];
@@ -121,7 +205,15 @@ const Visualizer = ({ analyser, visualizationType, settings }) => {
     };
   }, [analyser, visualizationType, settings]);
 
-  return <canvas className="bg-slate-800" ref={canvasRef}></canvas>;
+  return (
+    <>
+      <canvas
+        className="bg-slate-800"
+        ref={canvasRef}
+        style={{ width: "100vw", height: "100vh" }}
+      ></canvas>
+    </>
+  );
 };
 
 export default Visualizer;
