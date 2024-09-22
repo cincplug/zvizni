@@ -2,18 +2,19 @@
 import React, { useState } from "react";
 import Visualizer from "./components/Visualizer";
 import Controls from "./components/Controls";
+import { settingsConfig } from "./settingsConfig";
 
 export default function Home() {
+  const defaultSettings = settingsConfig.reduce((acc, setting) => {
+    acc[setting.name] = setting.value;
+    return acc;
+  }, {});
+
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [volume, setVolume] = useState(1);
   const [visualizationType, setVisualizationType] = useState("flower");
   const [analyser, setAnalyser] = useState(null);
-  const [settings, setSettings] = useState({
-    minRadius: 5,
-    maxRadius: 4,
-    frameRotation: 0,
-    angleModifier: 2,
-  });
+  const [settings, setSettings] = useState(defaultSettings);
 
   const handleAnalysisStateChange = (isAnalyzing, analyser) => {
     setIsAnalyzing(isAnalyzing);

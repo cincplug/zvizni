@@ -1,23 +1,7 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
-import { settingsConfig } from "../settingsConfig";
+import React, { useEffect, useRef } from "react";
 
-const Visualizer = ({ analyser, visualizationType }) => {
+const Visualizer = ({ analyser, visualizationType, settings }) => {
   const canvasRef = useRef(null);
-
-  const initialSettings = settingsConfig.reduce((acc, setting) => {
-    acc[setting.name] = setting.value;
-    return acc;
-  }, {});
-
-  const [settings, setSettings] = useState(initialSettings);
-
-  const handleChange = useCallback((e) => {
-    const { name, value } = e.target;
-    setSettings((prevSettings) => ({
-      ...prevSettings,
-      [name]: parseFloat(value)
-    }));
-  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -39,7 +23,6 @@ const Visualizer = ({ analyser, visualizationType }) => {
 
     const draw = () => {
       requestAnimationFrame(draw);
-
       analyser.getByteFrequencyData(dataArray);
 
       canvasCtx.save();
@@ -86,7 +69,6 @@ const Visualizer = ({ analyser, visualizationType }) => {
           const avgY = (prevY + y) / 2;
 
           drawFn(avgX, avgY, size);
-
           prevX = x;
           prevY = y;
         });
@@ -97,14 +79,14 @@ const Visualizer = ({ analyser, visualizationType }) => {
 
         if (settings.border > 0) {
           canvasCtx.lineWidth = settings.border;
-          canvasCtx.strokeStyle = "rgb(30, 41, 59)"; 
+          canvasCtx.strokeStyle = "rgb(30, 41, 59)";
           canvasCtx.stroke();
         }
       };
 
       const visualizations = {
         flower: () => {
-          drawShape((x, y, size) => {
+          drawShape((x, y) => {
             canvasCtx.lineTo(x, y);
           });
         },
@@ -176,16 +158,14 @@ const Visualizer = ({ analyser, visualizationType }) => {
     return () => {
       window.removeEventListener("resize", resizeCanvas);
     };
-  }, [analyser, visualizationType, settings]);
+  }, [analyser, visualizationType, settings]); // Ensure to include settings
 
   return (
-    <>
-      <canvas
-        className="bg-slate-800"
-        ref={canvasRef}
-        style={{ width: "100vw", height: "100vh" }}
-      ></canvas>
-    </>
+    <canvas
+      className="bg-slate-800"
+      ref={canvasRef}
+      style={{ width: "100vw", height: "100vh" }}
+    />
   );
 };
 
