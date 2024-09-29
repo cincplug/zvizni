@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import { settingsConfig } from "../settingsConfig";
 
 const Visualizer = ({ analyser, visualizationType, settings }) => {
   const canvasRef = useRef(null);
@@ -24,7 +25,7 @@ const Visualizer = ({ analyser, visualizationType, settings }) => {
       requestAnimationFrame(draw);
       analyser.getByteFrequencyData(dataArray);
 
-      hue = (hue + 1) % 360;
+      hue = (hue + settings.colorFactor) % 360;
 
       const startFrequency = 40;
       const endFrequency = bufferLength - startFrequency;

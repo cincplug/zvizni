@@ -16,6 +16,14 @@ export const settingsConfig = [
     value: 4
   },
   {
+    name: "colorFactor",
+    label: "Color factor",
+    min: -5,
+    max: 10,
+    step: 0.01,
+    value: 1
+  },
+  {
     name: "angleModifier",
     label: "Angle Modifier",
     min: 1,
