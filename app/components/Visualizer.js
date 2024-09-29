@@ -19,23 +19,12 @@ const Visualizer = ({ analyser, visualizationType, settings }) => {
     const dataArray = new Uint8Array(bufferLength);
 
     let hue = 0;
-    let rotationAngle = 0;
 
     const draw = () => {
       requestAnimationFrame(draw);
       analyser.getByteFrequencyData(dataArray);
 
-      canvasCtx.save();
-      canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
-      canvasCtx.translate(canvas.width / 2, canvas.height / 2);
-      canvasCtx.rotate((rotationAngle * Math.PI) / 180);
-      canvasCtx.translate(-canvas.width / 2, -canvas.height / 2);
-
-      canvasCtx.fillStyle = "rgba(255, 255, 255, 0.01)";
-      canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
-
       hue = (hue + 1) % 360;
-      rotationAngle = (rotationAngle + settings.frameRotation) % 360;
 
       const startFrequency = 40;
       const endFrequency = bufferLength - startFrequency;
@@ -150,7 +139,6 @@ const Visualizer = ({ analyser, visualizationType, settings }) => {
         visualize();
       }
 
-      canvasCtx.restore();
     };
 
     draw();

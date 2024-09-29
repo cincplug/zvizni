@@ -16,14 +16,6 @@ export const settingsConfig = [
     value: 4
   },
   {
-    name: "frameRotation",
-    label: "Frame Rotation",
-    min: 0,
-    max: 30,
-    step: 0.1,
-    value: 0
-  },
-  {
     name: "angleModifier",
     label: "Angle Modifier",
     min: 1,
