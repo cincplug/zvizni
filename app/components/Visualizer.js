@@ -64,7 +64,7 @@ const Visualizer = ({ analyser, visualizationType, settings }) => {
         });
         canvasCtx.closePath();
 
-        canvasCtx.fillStyle = `hsla(${hue}, 100%, 80%, 0.5)`;
+        canvasCtx.fillStyle = `hsla(${hue}, ${settings.saturation}%, ${settings.lightness}%, ${settings.alpha})`;
         canvasCtx.fill();
 
         if (settings.border > 0) {
@@ -139,7 +139,6 @@ const Visualizer = ({ analyser, visualizationType, settings }) => {
       if (visualize) {
         visualize();
       }
-
     };
 
     draw();
@@ -147,7 +146,7 @@ const Visualizer = ({ analyser, visualizationType, settings }) => {
     return () => {
       window.removeEventListener("resize", resizeCanvas);
     };
-  }, [analyser, visualizationType, settings]); // Ensure to include settings
+  }, [analyser, visualizationType, settings]);
 
   return (
     <canvas

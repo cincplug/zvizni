@@ -24,6 +24,30 @@ export const settingsConfig = [
     value: 1
   },
   {
+    name: "saturation",
+    label: "Saturation",
+    min: 0,
+    max: 100,
+    step: 1,
+    value: 80
+  },
+  {
+    name: "lightness",
+    label: "Lightness",
+    min: 0,
+    max: 100,
+    step: 1,
+    value: 80
+  },
+  {
+    name: "alpha",
+    label: "Alpha",
+    min: 0,
+    max: 1,
+    step: 0.01,
+    value: 0.1
+  },
+  {
     name: "angleModifier",
     label: "Angle Modifier",
     min: 1,
