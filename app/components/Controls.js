@@ -24,10 +24,10 @@ const Controls = ({
   const gainNodeRef = useRef(null);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     onSettingsChange((prevSettings) => ({
       ...prevSettings,
-      [name]: parseFloat(value)
+      [name]: type === "checkbox" ? checked : value
     }));
   };
 
@@ -115,19 +115,42 @@ const Controls = ({
             {settingsConfig.map((setting) => (
               <React.Fragment key={setting.name}>
                 <label className="col-span-5 text-sm">{setting.label}</label>
-                <input
-                  type="range"
-                  name={setting.name}
-                  min={setting.min}
-                  max={setting.max}
-                  step={setting.step}
-                  value={settings[setting.name]}
-                  onChange={handleChange}
-                  className="col-span-5"
-                />
-                <span className="col-span-2 text-right text-sm">
-                  {settings[setting.name]}
-                </span>
+                {setting.type === "range" && (
+                  <>
+                    <input
+                      type="range"
+                      name={setting.name}
+                      min={setting.min}
+                      max={setting.max}
+                      step={setting.step}
+                      value={settings[setting.name]}
+                      onChange={handleChange}
+                      className="col-span-5"
+                    />
+                    <span className="col-span-2 text-right text-sm">
+                      {settings[setting.name]}
+                    </span>
+                  </>
+                )}
+                {setting.type === "checkbox" && (
+                  <div className="col-span-5 flex justify-start">
+                    <input
+                      type="checkbox"
+                      name={setting.name}
+                      checked={settings[setting.name]}
+                      onChange={handleChange}
+                    />
+                  </div>
+                )}
+                {setting.type === "color" && (
+                  <input
+                    type="color"
+                    name={setting.name}
+                    value={settings[setting.name]}
+                    onChange={handleChange}
+                    className="col-span-5"
+                  />
+                )}
               </React.Fragment>
             ))}
           </div>

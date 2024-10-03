@@ -8,9 +8,6 @@ const Visualizer = ({ analyser, visualizationType, settings }) => {
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
-    const bgColor = window.getComputedStyle(
-      document.querySelector("main")
-    ).backgroundColor;
 
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
@@ -72,7 +69,7 @@ const Visualizer = ({ analyser, visualizationType, settings }) => {
           settings.isFill ? "fillStyle" : "strokeStyle"
         ] = `hsla(${hue}, ${settings.saturation}%, ${settings.lightness}%, ${settings.alpha})`;
 
-        ctx[settings.isFill ? "strokeStyle" : "fillStyle"] = bgColor;
+        ctx[settings.isFill ? "strokeStyle" : "fillStyle"] = settings.bgColor;
         ctx.lineWidth = settings.border;
         ctx.fill();
         ctx.stroke();
@@ -154,9 +151,8 @@ const Visualizer = ({ analyser, visualizationType, settings }) => {
 
   return (
     <canvas
-      className="bg-slate-800"
       ref={canvasRef}
-      style={{ width: "100vw", height: "100vh" }}
+      style={{ backgroundColor: settings.bgColor, width: "100vw", height: "100vh" }}
     />
   );
 };

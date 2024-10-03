@@ -5,7 +5,8 @@ export const settingsConfig = [
     min: 1,
     max: 100,
     step: 0.1,
-    value: 5
+    value: 5,
+    type: "range"
   },
   {
     name: "maxRadius",
@@ -13,15 +14,17 @@ export const settingsConfig = [
     min: 1,
     max: 10,
     step: 0.1,
-    value: 4
+    value: 4,
+    type: "range"
   },
   {
     name: "colorFactor",
-    label: "Color factor",
+    label: "Color Factor",
     min: -5,
     max: 10,
     step: 0.01,
-    value: 1
+    value: 1,
+    type: "range"
   },
   {
     name: "saturation",
@@ -29,7 +32,8 @@ export const settingsConfig = [
     min: 0,
     max: 100,
     step: 1,
-    value: 80
+    value: 80,
+    type: "range"
   },
   {
     name: "lightness",
@@ -37,7 +41,8 @@ export const settingsConfig = [
     min: 0,
     max: 100,
     step: 1,
-    value: 80
+    value: 80,
+    type: "range"
   },
   {
     name: "alpha",
@@ -45,7 +50,8 @@ export const settingsConfig = [
     min: 0,
     max: 1,
     step: 0.01,
-    value: 0.1
+    value: 0.1,
+    type: "range"
   },
   {
     name: "angleModifier",
@@ -53,7 +59,8 @@ export const settingsConfig = [
     min: 1,
     max: 10,
     step: 0.1,
-    value: 2
+    value: 2,
+    type: "range"
   },
   {
     name: "border",
@@ -61,15 +68,19 @@ export const settingsConfig = [
     min: 0,
     max: 10,
     step: 0.1,
-    value: 1
+    value: 1,
+    type: "range"
   },
   {
     name: "isFill",
     label: "Fill",
-    min: 0,
-    max: 1,
-    step: 1,
-    value: 1
+    value: true,
+    type: "checkbox"
   },
-
+  {
+    name: "bgColor",
+    label: "BG Color",
+    value: "#1e293b",
+    type: "color"
+  }
 ];
