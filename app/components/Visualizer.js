@@ -3,8 +3,6 @@ import React, { useEffect, useRef } from "react";
 const Visualizer = ({ analyser, visualizationType, settings }) => {
   const canvasRef = useRef(null);
 
-
-
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
@@ -28,8 +26,8 @@ const Visualizer = ({ analyser, visualizationType, settings }) => {
 
       hue = (hue + settings.colorFactor) % 360;
 
-      const startFrequency = 40;
-      const endFrequency = bufferLength - startFrequency;
+      const startFrequency = settings.minFrequency;
+      const endFrequency = settings.maxFrequency;
 
       const averageAmplitude =
         dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;

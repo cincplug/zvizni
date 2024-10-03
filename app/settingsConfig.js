@@ -1,5 +1,23 @@
 export const settingsConfig = [
   {
+    name: "minFrequency",
+    label: "Min Frequency",
+    min: 0,
+    max: 512,
+    step: 1,
+    value: 40,
+    type: "range"
+  },
+  {
+    name: "maxFrequency",
+    label: "Max Frequency",
+    min: 0,
+    max: 512,
+    step: 1,
+    value: 472,
+    type: "range"
+  },
+  {
     name: "minRadius",
     label: "Min Radius",
     min: 1,
