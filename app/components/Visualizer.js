@@ -1,12 +1,16 @@
 import React, { useEffect, useRef } from "react";
-import { settingsConfig } from "../settingsConfig";
 
 const Visualizer = ({ analyser, visualizationType, settings }) => {
   const canvasRef = useRef(null);
 
+
+
   useEffect(() => {
     const canvas = canvasRef.current;
-    const canvasCtx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d");
+    const bgColor = window.getComputedStyle(
+      document.querySelector("main")
+    ).backgroundColor;
 
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
@@ -45,7 +49,7 @@ const Visualizer = ({ analyser, visualizationType, settings }) => {
         let prevX = centerX;
         let prevY = centerY;
 
-        canvasCtx.beginPath();
+        ctx.beginPath();
         dataArray.slice(startFrequency, endFrequency).forEach((value, i) => {
           const size = Math.max((value / 256) * maxRadius, minRadius);
           const angle =
@@ -62,49 +66,49 @@ const Visualizer = ({ analyser, visualizationType, settings }) => {
           prevX = x;
           prevY = y;
         });
-        canvasCtx.closePath();
+        ctx.closePath();
 
-        canvasCtx.fillStyle = `hsla(${hue}, ${settings.saturation}%, ${settings.lightness}%, ${settings.alpha})`;
-        canvasCtx.fill();
+        ctx[
+          settings.isFill ? "fillStyle" : "strokeStyle"
+        ] = `hsla(${hue}, ${settings.saturation}%, ${settings.lightness}%, ${settings.alpha})`;
 
-        if (settings.border > 0) {
-          canvasCtx.lineWidth = settings.border;
-          canvasCtx.strokeStyle = "rgb(30, 41, 59)";
-          canvasCtx.stroke();
-        }
+        ctx[settings.isFill ? "strokeStyle" : "fillStyle"] = bgColor;
+        ctx.lineWidth = settings.border;
+        ctx.fill();
+        ctx.stroke();
       };
 
       const visualizations = {
         flower: () => {
           drawShape((x, y) => {
-            canvasCtx.lineTo(x, y);
+            ctx.lineTo(x, y);
           });
         },
         squares: () => {
           drawShape((x, y, size) => {
-            canvasCtx.rect(x - size / 2, y - size / 2, size, size);
+            ctx.rect(x - size / 2, y - size / 2, size, size);
           });
         },
         triangles: () => {
           drawShape((x, y, size) => {
-            canvasCtx.moveTo(x, y - size / 2);
-            canvasCtx.lineTo(x - size / 2, y + size / 2);
-            canvasCtx.lineTo(x + size / 2, y + size / 2);
-            canvasCtx.closePath();
+            ctx.moveTo(x, y - size / 2);
+            ctx.lineTo(x - size / 2, y + size / 2);
+            ctx.lineTo(x + size / 2, y + size / 2);
+            ctx.closePath();
           });
         },
         circles: () => {
           drawShape((x, y, size) => {
-            canvasCtx.moveTo(x + size / 2, y);
-            canvasCtx.arc(x, y, size / 2, 0, Math.PI * 2);
+            ctx.moveTo(x + size / 2, y);
+            ctx.arc(x, y, size / 2, 0, Math.PI * 2);
           });
         },
         hexagons: () => {
           drawShape((x, y, size) => {
             const side = size / 2;
-            canvasCtx.moveTo(x + side * Math.cos(0), y + side * Math.sin(0));
+            ctx.moveTo(x + side * Math.cos(0), y + side * Math.sin(0));
             for (let i = 1; i <= 6; i++) {
-              canvasCtx.lineTo(
+              ctx.lineTo(
                 x + side * Math.cos((i * 2 * Math.PI) / 6),
                 y + side * Math.sin((i * 2 * Math.PI) / 6)
               );
@@ -119,16 +123,16 @@ const Visualizer = ({ analyser, visualizationType, settings }) => {
             let rot = (Math.PI / 2) * 3;
             let step = Math.PI / spikes;
 
-            canvasCtx.moveTo(x, y - outerRadius);
+            ctx.moveTo(x, y - outerRadius);
             for (let i = 0; i < spikes; i++) {
               let xOuter = x + Math.cos(rot) * outerRadius;
               let yOuter = y + Math.sin(rot) * outerRadius;
-              canvasCtx.lineTo(xOuter, yOuter);
+              ctx.lineTo(xOuter, yOuter);
               rot += step;
 
               let xInner = x + Math.cos(rot) * innerRadius;
               let yInner = y + Math.sin(rot) * innerRadius;
-              canvasCtx.lineTo(xInner, yInner);
+              ctx.lineTo(xInner, yInner);
               rot += step;
             }
           });

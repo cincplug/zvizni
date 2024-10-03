@@ -60,7 +60,16 @@ export const settingsConfig = [
     label: "Border",
     min: 0,
     max: 10,
+    step: 0.1,
+    value: 1
+  },
+  {
+    name: "isFill",
+    label: "Fill",
+    min: 0,
+    max: 1,
     step: 1,
     value: 1
-  }
+  },
+
 ];

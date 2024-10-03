@@ -53,7 +53,7 @@ const Controls = ({
         gainNodeRef.current.connect(analyserRef.current);
         analyserRef.current.connect(audioContextRef.current.destination);
 
-        analyserRef.current.fftSize = 512;
+        analyserRef.current.fftSize = 1024;
         gainNodeRef.current.gain.value = 1;
 
         onAnalysisStateChange(true, analyserRef.current);
