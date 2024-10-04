@@ -5,7 +5,7 @@ export const settingsConfig = [
     min: 0,
     max: 512,
     step: 1,
-    value: 40,
+    value: 100,
     type: "range"
   },
   {
@@ -14,7 +14,7 @@ export const settingsConfig = [
     min: 0,
     max: 512,
     step: 1,
-    value: 472,
+    value: 400,
     type: "range"
   },
   {
@@ -77,7 +77,7 @@ export const settingsConfig = [
     min: 1,
     max: 10,
     step: 0.1,
-    value: 2,
+    value: 4,
     type: "range"
   },
   {
