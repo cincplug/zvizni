@@ -44,7 +44,9 @@ const Visualizer = ({ analyser, visualizationType, settings }) => {
         let prevX = centerX;
         let prevY = centerY;
 
-        ctx.beginPath();
+        if (!settings.isMingle) {
+          ctx.beginPath();
+        }
         dataArray.slice(startFrequency, endFrequency).forEach((value, i) => {
           const size = Math.max((value / 256) * maxRadius, minRadius);
           const angle =
@@ -61,7 +63,9 @@ const Visualizer = ({ analyser, visualizationType, settings }) => {
           prevX = x;
           prevY = y;
         });
-        ctx.closePath();
+        if (!settings.isMingle) {
+          ctx.closePath();
+        }
 
         ctx[
           settings.isFill ? "fillStyle" : "strokeStyle"
@@ -89,7 +93,6 @@ const Visualizer = ({ analyser, visualizationType, settings }) => {
             ctx.moveTo(x, y - size / 2);
             ctx.lineTo(x - size / 2, y + size / 2);
             ctx.lineTo(x + size / 2, y + size / 2);
-            ctx.closePath();
           });
         },
         circles: () => {

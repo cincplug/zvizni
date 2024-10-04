@@ -96,6 +96,12 @@ export const settingsConfig = [
     type: "checkbox"
   },
   {
+    name: "isMingle",
+    label: "Mingle",
+    value: true,
+    type: "checkbox"
+  },
+  {
     name: "bgColor",
     label: "BG Color",
     value: "#1e293b",
