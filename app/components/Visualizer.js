@@ -153,7 +153,10 @@ const Visualizer = ({ analyser, visualizationType, settings }) => {
   return (
     <canvas
       ref={canvasRef}
-      style={{ backgroundColor: settings.bgColor, width: "100vw", height: "100vh" }}
+      style={{
+        backgroundColor: settings.bgColor
+      }}
+      className="w-screen h-screen"
     />
   );
 };
