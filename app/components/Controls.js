@@ -80,9 +80,10 @@ const Controls = ({
       } bg-slate-700 text-slate-100 p-4 rounded shadow-lg max-w-xs w-full`}
     >
       {!isAnalyzing && (
-        <h1 className="text-2xl font-bold mb-4 text-center">
-          Zvuk - Audio Analyzer
-        </h1>
+        <div className="text-center">
+          <h1 className="text-6xl font-bold text-center">Zvizni</h1>
+          <p className="text-sm mb-4">audio visualization prototype</p>
+        </div>
       )}
       <button
         onClick={isAnalyzing ? stopAnalyzing : startAnalyzing}
@@ -90,7 +91,7 @@ const Controls = ({
           isAnalyzing ? "bg-red-500" : "bg-blue-500"
         } text-white w-full`}
       >
-        {isAnalyzing ? "Stop" : "Start"}
+        {isAnalyzing ? "Stop" : "Start"} Zvizni
       </button>
 
       {isAnalyzing && (
