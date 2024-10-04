@@ -98,7 +98,7 @@ export const settingsConfig = [
   {
     name: "isMingle",
     label: "Mingle",
-    value: true,
+    value: false,
     type: "checkbox"
   },
   {
