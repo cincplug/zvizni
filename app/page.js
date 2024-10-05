@@ -50,6 +50,8 @@ export default function Home() {
           analyser={analyser}
           visualizationType={visualizationType}
           settings={settings}
+          onSettingsChange={handleSettingsChange}
+          settingsConfig={settingsConfig}
         />
       )}
     </main>

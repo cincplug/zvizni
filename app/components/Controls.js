@@ -24,10 +24,10 @@ const Controls = ({
   const gainNodeRef = useRef(null);
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value, type } = e.target;
     onSettingsChange((prevSettings) => ({
       ...prevSettings,
-      [name]: type === "checkbox" ? checked : value
+      [name]: type === "checkbox" ? e.target.checked : value
     }));
   };
 
@@ -126,10 +126,10 @@ const Controls = ({
                       step={setting.step}
                       value={settings[setting.name]}
                       onChange={handleChange}
-                      className="col-span-5"
+                      className="col-span-4"
                     />
-                    <span className="col-span-2 text-right text-sm">
-                      {settings[setting.name]}
+                    <span className="col-span-3 text-right text-sm">
+                      {parseFloat(settings[setting.name]).toFixed(2)}
                     </span>
                   </>
                 )}

@@ -1,7 +1,9 @@
 import React, { useEffect, useRef } from "react";
+import { visualizations } from "../utils/visualizations";
 
-const Visualizer = ({ analyser, visualizationType, settings }) => {
+const Visualizer = ({ analyser, visualizationType, settings, onSettingsChange, settingsConfig }) => {
   const canvasRef = useRef(null);
+  const lastTimeRef = useRef(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -21,11 +23,14 @@ const Visualizer = ({ analyser, visualizationType, settings }) => {
     let hue = 0;
     ctx.globalCompositeOperation = settings.composite;
 
-    const draw = () => {
+    const draw = (time) => {
+      const deltaTime = time - lastTimeRef.current;
+      lastTimeRef.current = time;
+
       requestAnimationFrame(draw);
       analyser.getByteFrequencyData(dataArray);
 
-      hue = (hue + settings.colorFactor) % 360;
+      hue = (hue + settings.colorFactor * deltaTime) % 360;
 
       const startFrequency = settings.minFrequency;
       const endFrequency = settings.maxFrequency;
@@ -78,78 +83,18 @@ const Visualizer = ({ analyser, visualizationType, settings }) => {
         ctx.stroke();
       };
 
-      const visualizations = {
-        flower: () => {
-          drawShape((x, y) => {
-            ctx.lineTo(x, y);
-          });
-        },
-        squares: () => {
-          drawShape((x, y, size) => {
-            ctx.rect(x - size / 2, y - size / 2, size, size);
-          });
-        },
-        triangles: () => {
-          drawShape((x, y, size) => {
-            ctx.moveTo(x, y - size / 2);
-            ctx.lineTo(x - size / 2, y + size / 2);
-            ctx.lineTo(x + size / 2, y + size / 2);
-          });
-        },
-        circles: () => {
-          drawShape((x, y, size) => {
-            ctx.moveTo(x + size / 2, y);
-            ctx.arc(x, y, size / 2, 0, Math.PI * 2);
-          });
-        },
-        hexagons: () => {
-          drawShape((x, y, size) => {
-            const side = size / 2;
-            ctx.moveTo(x + side * Math.cos(0), y + side * Math.sin(0));
-            for (let i = 1; i <= 6; i++) {
-              ctx.lineTo(
-                x + side * Math.cos((i * 2 * Math.PI) / 6),
-                y + side * Math.sin((i * 2 * Math.PI) / 6)
-              );
-            }
-          });
-        },
-        stars: () => {
-          drawShape((x, y, size) => {
-            const spikes = 5;
-            const outerRadius = size;
-            const innerRadius = size / 2;
-            let rot = (Math.PI / 2) * 3;
-            let step = Math.PI / spikes;
-
-            ctx.moveTo(x, y - outerRadius);
-            for (let i = 0; i < spikes; i++) {
-              let xOuter = x + Math.cos(rot) * outerRadius;
-              let yOuter = y + Math.sin(rot) * outerRadius;
-              ctx.lineTo(xOuter, yOuter);
-              rot += step;
-
-              let xInner = x + Math.cos(rot) * innerRadius;
-              let yInner = y + Math.sin(rot) * innerRadius;
-              ctx.lineTo(xInner, yInner);
-              rot += step;
-            }
-          });
-        }
-      };
-
       const visualize = visualizations[visualizationType];
       if (visualize) {
-        visualize();
+        visualize(ctx, drawShape, hue, settings);
       }
     };
 
-    draw();
+    requestAnimationFrame(draw);
 
     return () => {
       window.removeEventListener("resize", resizeCanvas);
     };
-  }, [analyser, visualizationType, settings]);
+  }, [analyser, visualizationType, settings, onSettingsChange, settingsConfig]);
 
   return (
     <canvas
