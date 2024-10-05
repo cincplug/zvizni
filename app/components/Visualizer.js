@@ -1,63 +1,73 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useMemo } from "react";
 import { visualizations } from "../utils/visualizations";
 
-const Visualizer = ({ analyser, visualizationType, settings, onSettingsChange, settingsConfig }) => {
+const Visualizer = ({
+  analyser,
+  visualizationType,
+  settings,
+  onSettingsChange,
+  settingsConfig
+}) => {
   const canvasRef = useRef(null);
+  const frameRef = useRef(1);
   const lastTimeRef = useRef(0);
+
+  const memoizedSettings = useMemo(() => settings, [settings]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
 
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-
-    window.addEventListener("resize", resizeCanvas);
-    resizeCanvas();
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
     const bufferLength = analyser.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
 
     let hue = 0;
-    ctx.globalCompositeOperation = settings.composite;
+    ctx.globalCompositeOperation = memoizedSettings.composite;
 
     const draw = (time) => {
       const deltaTime = time - lastTimeRef.current;
       lastTimeRef.current = time;
 
+      frameRef.current += 1;
+      if (frameRef.current > 100) {
+        frameRef.current = 1;
+      }
+
       requestAnimationFrame(draw);
       analyser.getByteFrequencyData(dataArray);
 
-      hue = (hue + settings.colorFactor * deltaTime) % 360;
+      hue = (hue + memoizedSettings.colorFactor * deltaTime * 0.01) % 360;
 
-      const startFrequency = settings.minFrequency;
-      const endFrequency = settings.maxFrequency;
+      const startFrequency = memoizedSettings.minFrequency;
+      const endFrequency = memoizedSettings.maxFrequency;
 
       const averageAmplitude =
         dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
       const minRadius = Math.max(
-        (averageAmplitude / 256) * settings.maxRadius * 0.5,
-        settings.minRadius
+        (averageAmplitude / 256) * memoizedSettings.maxRadius * 0.5,
+        memoizedSettings.minRadius
       );
 
       const drawShape = (drawFn) => {
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
-        const maxRadius = Math.min(centerX, centerY) * settings.maxRadius;
+        const maxRadius =
+          Math.min(centerX, centerY) * memoizedSettings.maxRadius;
 
         let prevX = centerX;
         let prevY = centerY;
 
-        if (!settings.isMingle) {
+        if (!memoizedSettings.isMingle) {
           ctx.beginPath();
         }
         dataArray.slice(startFrequency, endFrequency).forEach((value, i) => {
           const size = Math.max((value / 256) * maxRadius, minRadius);
           const angle =
             ((i + startFrequency) / bufferLength) *
-            settings.angleModifier *
+            memoizedSettings.angleModifier *
             Math.PI;
           const x = centerX + size * Math.cos(angle);
           const y = centerY + size * Math.sin(angle);
@@ -69,38 +79,43 @@ const Visualizer = ({ analyser, visualizationType, settings, onSettingsChange, s
           prevX = x;
           prevY = y;
         });
-        if (!settings.isMingle) {
+        if (!memoizedSettings.isMingle) {
           ctx.closePath();
         }
 
         ctx[
-          settings.isFill ? "fillStyle" : "strokeStyle"
-        ] = `hsla(${hue}, ${settings.saturation}%, ${settings.lightness}%, ${settings.alpha})`;
+          memoizedSettings.isFill ? "fillStyle" : "strokeStyle"
+        ] = `hsla(${hue}, ${memoizedSettings.saturation}%, ${memoizedSettings.lightness}%, ${memoizedSettings.alpha})`;
 
-        ctx[settings.isFill ? "strokeStyle" : "fillStyle"] = settings.bgColor;
-        ctx.lineWidth = settings.border;
+        ctx[memoizedSettings.isFill ? "strokeStyle" : "fillStyle"] =
+          memoizedSettings.bgColor;
+        ctx.lineWidth = memoizedSettings.border;
         ctx.fill();
         ctx.stroke();
       };
 
       const visualize = visualizations[visualizationType];
       if (visualize) {
-        visualize(ctx, drawShape, hue, settings);
+        visualize(ctx, drawShape, hue, memoizedSettings);
       }
     };
 
     requestAnimationFrame(draw);
 
-    return () => {
-      window.removeEventListener("resize", resizeCanvas);
-    };
-  }, [analyser, visualizationType, settings, onSettingsChange, settingsConfig]);
+    return () => {};
+  }, [
+    analyser,
+    visualizationType,
+    memoizedSettings,
+    onSettingsChange,
+    settingsConfig
+  ]);
 
   return (
     <canvas
       ref={canvasRef}
       style={{
-        backgroundColor: settings.bgColor
+        backgroundColor: memoizedSettings.bgColor
       }}
       className="w-screen h-screen"
     />
