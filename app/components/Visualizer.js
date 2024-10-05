@@ -19,6 +19,7 @@ const Visualizer = ({ analyser, visualizationType, settings }) => {
     const dataArray = new Uint8Array(bufferLength);
 
     let hue = 0;
+    ctx.globalCompositeOperation = settings.composite;
 
     const draw = () => {
       requestAnimationFrame(draw);

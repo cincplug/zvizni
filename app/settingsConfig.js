@@ -106,5 +106,38 @@ export const settingsConfig = [
     label: "BG Color",
     value: "#1e293b",
     type: "color"
+  },
+  {
+    name: "composite",
+    label: "Composite",
+    value: "source-over",
+    type: "select",
+    options: [
+      "source-over",
+      "source-in",
+      "source-out",
+      "source-atop",
+      "destination-over",
+      "destination-in",
+      "destination-out",
+      "destination-atop",
+      "lighter",
+      "copy",
+      "xor",
+      "multiply",
+      "screen",
+      "overlay",
+      "darken",
+      "lighten",
+      "color-dodge",
+      "color-burn",
+      "hard-light",
+      "soft-light",
+      "difference",
+      "exclusion",
+      "hue",
+      "saturation",
+      "color"
+    ]
   }
 ];

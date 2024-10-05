@@ -152,6 +152,20 @@ const Controls = ({
                     className="col-span-5"
                   />
                 )}
+                {setting.type === "select" && (
+                  <select
+                    name={setting.name}
+                    value={settings[setting.name]}
+                    onChange={handleChange}
+                    className="col-span-7 bg-white text-black text-sm rounded"
+                  >
+                    {setting.options.map((option) => (
+                      <option key={option} value={option}>
+                        {option.charAt(0).toUpperCase() + option.slice(1)}
+                      </option>
+                    ))}
+                  </select>
+                )}
               </React.Fragment>
             ))}
           </div>
