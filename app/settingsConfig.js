@@ -1,7 +1,7 @@
 export const settingsConfig = [
   {
-    name: "minFrequency",
-    label: "Min Frequency",
+    name: "startFrequency",
+    label: "Start Frequency",
     min: 0,
     max: 512,
     step: 1,
@@ -9,8 +9,8 @@ export const settingsConfig = [
     type: "range"
   },
   {
-    name: "maxFrequency",
-    label: "Max Frequency",
+    name: "endFrequency",
+    label: "End Frequency",
     min: 0,
     max: 512,
     step: 1,
@@ -18,8 +18,8 @@ export const settingsConfig = [
     type: "range"
   },
   {
-    name: "minRadius",
-    label: "Min Radius",
+    name: "seedRadius",
+    label: "Seed Radius",
     min: 1,
     max: 100,
     step: 0.1,
@@ -27,10 +27,10 @@ export const settingsConfig = [
     type: "range"
   },
   {
-    name: "maxRadius",
-    label: "Max Radius",
+    name: "petalRadius",
+    label: "Petal Radius",
     min: 1,
-    max: 10,
+    max: 100,
     step: 0.1,
     value: 4,
     type: "range"
@@ -96,8 +96,8 @@ export const settingsConfig = [
     type: "checkbox"
   },
   {
-    name: "isMingle",
-    label: "Mingle",
+    name: "isClutter",
+    label: "Clutter",
     value: false,
     type: "checkbox"
   },

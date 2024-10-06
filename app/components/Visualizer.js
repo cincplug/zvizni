@@ -28,7 +28,23 @@ const Visualizer = ({
     const dataArray = new Uint8Array(bufferLength);
 
     let hue = 0;
-    ctx.globalCompositeOperation = settings.composite;
+    const {
+      composite,
+      colorFactor,
+      startFrequency,
+      endFrequency,
+      petalRadius,
+      seedRadius,
+      angleModifier,
+      isClutter,
+      isFill,
+      saturation,
+      lightness,
+      alpha,
+      bgColor,
+      border
+    } = settings;
+    ctx.globalCompositeOperation = composite;
 
     const draw = (time) => {
       const deltaTime = time - lastTimeRef.current;
@@ -42,36 +58,33 @@ const Visualizer = ({
       requestAnimationFrame(draw);
       analyser.getByteFrequencyData(dataArray);
 
-      hue = (hue + settings.colorFactor * deltaTime * 0.01) % 360;
-
-      const startFrequency = settings.minFrequency;
-      const endFrequency = settings.maxFrequency;
+      hue = (hue + colorFactor * deltaTime * 0.01) % 360;
 
       const averageAmplitude =
         dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
-      const minRadius = Math.max(
-        (averageAmplitude / 256) * settings.maxRadius * 0.5,
-        settings.minRadius
+      const seedRadiusValue = Math.max(
+        (averageAmplitude / 1024) * petalRadius,
+        seedRadius
       );
 
       const drawShape = (drawFn) => {
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
-        const maxRadius =
-          Math.min(centerX, centerY) * settings.maxRadius;
+        const petalRadiusValue = Math.min(centerX, centerY) * petalRadius;
 
         let prevX = centerX;
         let prevY = centerY;
 
-        if (!settings.isMingle) {
+        if (!isClutter) {
           ctx.beginPath();
         }
         dataArray.slice(startFrequency, endFrequency).forEach((value, i) => {
-          const size = Math.max((value / 256) * maxRadius, minRadius);
+          const size = Math.max(
+            (value / 256) * petalRadiusValue,
+            seedRadiusValue
+          );
           const angle =
-            ((i + startFrequency) / bufferLength) *
-            settings.angleModifier *
-            Math.PI;
+            ((i + startFrequency) / bufferLength) * angleModifier * Math.PI;
           const x = centerX + size * Math.cos(angle);
           const y = centerY + size * Math.sin(angle);
 
@@ -82,17 +95,16 @@ const Visualizer = ({
           prevX = x;
           prevY = y;
         });
-        if (!settings.isMingle) {
+        if (!isClutter) {
           ctx.closePath();
         }
 
         ctx[
-          settings.isFill ? "fillStyle" : "strokeStyle"
-        ] = `hsla(${hue}, ${settings.saturation}%, ${settings.lightness}%, ${settings.alpha})`;
+          isFill ? "fillStyle" : "strokeStyle"
+        ] = `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`;
 
-        ctx[settings.isFill ? "strokeStyle" : "fillStyle"] =
-          settings.bgColor;
-        ctx.lineWidth = settings.border;
+        ctx[isFill ? "strokeStyle" : "fillStyle"] = bgColor;
+        ctx.lineWidth = border;
         ctx.fill();
         ctx.stroke();
       };
@@ -104,13 +116,7 @@ const Visualizer = ({
     };
 
     requestAnimationFrame(draw);
-  }, [
-    analyser,
-    visualizationType,
-    settings,
-    onSettingsChange,
-    settingsConfig
-  ]);
+  }, [analyser, visualizationType, settings, onSettingsChange, settingsConfig]);
 
   return (
     <canvas
