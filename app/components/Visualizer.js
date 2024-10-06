@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useMemo } from "react";
+import React, { useEffect, useRef } from "react";
 import { visualizations } from "../utils/visualizations";
 
 const Visualizer = ({
@@ -11,8 +11,6 @@ const Visualizer = ({
   const canvasRef = useRef(null);
   const frameRef = useRef(1);
   const lastTimeRef = useRef(0);
-
-  const memoizedSettings = useMemo(() => settings, [settings]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -30,7 +28,7 @@ const Visualizer = ({
     const dataArray = new Uint8Array(bufferLength);
 
     let hue = 0;
-    ctx.globalCompositeOperation = memoizedSettings.composite;
+    ctx.globalCompositeOperation = settings.composite;
 
     const draw = (time) => {
       const deltaTime = time - lastTimeRef.current;
@@ -44,35 +42,35 @@ const Visualizer = ({
       requestAnimationFrame(draw);
       analyser.getByteFrequencyData(dataArray);
 
-      hue = (hue + memoizedSettings.colorFactor * deltaTime * 0.01) % 360;
+      hue = (hue + settings.colorFactor * deltaTime * 0.01) % 360;
 
-      const startFrequency = memoizedSettings.minFrequency;
-      const endFrequency = memoizedSettings.maxFrequency;
+      const startFrequency = settings.minFrequency;
+      const endFrequency = settings.maxFrequency;
 
       const averageAmplitude =
         dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
       const minRadius = Math.max(
-        (averageAmplitude / 256) * memoizedSettings.maxRadius * 0.5,
-        memoizedSettings.minRadius
+        (averageAmplitude / 256) * settings.maxRadius * 0.5,
+        settings.minRadius
       );
 
       const drawShape = (drawFn) => {
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
         const maxRadius =
-          Math.min(centerX, centerY) * memoizedSettings.maxRadius;
+          Math.min(centerX, centerY) * settings.maxRadius;
 
         let prevX = centerX;
         let prevY = centerY;
 
-        if (!memoizedSettings.isMingle) {
+        if (!settings.isMingle) {
           ctx.beginPath();
         }
         dataArray.slice(startFrequency, endFrequency).forEach((value, i) => {
           const size = Math.max((value / 256) * maxRadius, minRadius);
           const angle =
             ((i + startFrequency) / bufferLength) *
-            memoizedSettings.angleModifier *
+            settings.angleModifier *
             Math.PI;
           const x = centerX + size * Math.cos(angle);
           const y = centerY + size * Math.sin(angle);
@@ -84,24 +82,24 @@ const Visualizer = ({
           prevX = x;
           prevY = y;
         });
-        if (!memoizedSettings.isMingle) {
+        if (!settings.isMingle) {
           ctx.closePath();
         }
 
         ctx[
-          memoizedSettings.isFill ? "fillStyle" : "strokeStyle"
-        ] = `hsla(${hue}, ${memoizedSettings.saturation}%, ${memoizedSettings.lightness}%, ${memoizedSettings.alpha})`;
+          settings.isFill ? "fillStyle" : "strokeStyle"
+        ] = `hsla(${hue}, ${settings.saturation}%, ${settings.lightness}%, ${settings.alpha})`;
 
-        ctx[memoizedSettings.isFill ? "strokeStyle" : "fillStyle"] =
-          memoizedSettings.bgColor;
-        ctx.lineWidth = memoizedSettings.border;
+        ctx[settings.isFill ? "strokeStyle" : "fillStyle"] =
+          settings.bgColor;
+        ctx.lineWidth = settings.border;
         ctx.fill();
         ctx.stroke();
       };
 
       const visualize = visualizations[visualizationType];
       if (visualize) {
-        visualize(ctx, drawShape, hue, memoizedSettings);
+        visualize(ctx, drawShape, hue, settings);
       }
     };
 
@@ -109,7 +107,7 @@ const Visualizer = ({
   }, [
     analyser,
     visualizationType,
-    memoizedSettings,
+    settings,
     onSettingsChange,
     settingsConfig
   ]);
@@ -118,7 +116,7 @@ const Visualizer = ({
     <canvas
       ref={canvasRef}
       style={{
-        backgroundColor: memoizedSettings.bgColor
+        backgroundColor: settings.bgColor
       }}
       className="w-screen h-screen"
     />
