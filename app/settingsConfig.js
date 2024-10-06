@@ -36,15 +36,6 @@ export const settingsConfig = [
     type: "range"
   },
   {
-    name: "colorfulness",
-    label: "Colorfulness",
-    min: 0,
-    max: 100,
-    step: 1,
-    value: 1,
-    type: "range"
-  },
-  {
     name: "hue",
     label: "Hue",
     min: 0,

@@ -29,7 +29,6 @@ const Visualizer = ({
 
     const {
       composite,
-      colorfulness,
       hue,
       startFrequency,
       endFrequency,
@@ -97,9 +96,10 @@ const Visualizer = ({
           ctx.closePath();
         }
 
+        const adjustedHue = (hue + deltaTime) % 360;
         ctx[
           isFill ? "fillStyle" : "strokeStyle"
-        ] = `hsla(${hue + colorfulness * frameRef.current}, ${saturation}%, ${lightness}%, ${alpha})`;
+        ] = `hsla(${adjustedHue}, ${saturation}%, ${lightness}%, ${alpha})`;
 
         ctx[isFill ? "strokeStyle" : "fillStyle"] = bgColor;
         ctx.lineWidth = border;
