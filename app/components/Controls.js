@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import { settingsConfig } from "../settingsConfig";
+import MenuToggle from "./MenuToggle";
 
 const visualizationModes = [
   "flower",
@@ -16,9 +17,11 @@ const Controls = ({
   visualizationType,
   onVisualizationChange,
   settings,
-  onSettingsChange
+  onSettingsChange,
+  clearCanvas,
+  saveCanvas
 }) => {
-  const [isMenuVisible, setIsMenuVisible] = useState(true); // State for menu visibility
+  const [isMenuVisible, setIsMenuVisible] = useState(true);
   const audioContextRef = useRef(null);
   const sourceRef = useRef(null);
   const analyserRef = useRef(null);
@@ -75,58 +78,22 @@ const Controls = ({
   return (
     <div className="relative">
       {isAnalyzing && (
-        <button
-          onClick={() => setIsMenuVisible(!isMenuVisible)}
-          className="fixed top-4 right-4 z-50 bg-slate-700 text-slate-100 p-2 rounded-full shadow-lg"
-        >
-          {isMenuVisible ? (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          ) : (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M3 12H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M3 6H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M3 18H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          )}
-        </button>
-      )}
-
-      {isMenuVisible && (
-        <div
-          className={`${
-            isAnalyzing
-              ? "fixed top-4 right-4 bg-slate-700"
-              : "flex flex-col items-center justify-center"
-          } text-slate-100 p-4 rounded shadow-lg max-w-xs w-full`}
-        >
-          {!isAnalyzing && (
-            <div className="text-center">
-              <h1 className="text-6xl font-bold text-center">Zvizni</h1>
-              <p className="text-sm mb-4">audio visualization prototype</p>
-            </div>
-          )}
-          <button
-            onClick={isAnalyzing ? stopAnalyzing : startAnalyzing}
-            className={`px-4 py-2 rounded ${
-              isAnalyzing ? "bg-red-500" : "bg-blue-500"
-            } text-white w-3/4`} 
-          >
-            {isAnalyzing ? "Stop" : "Start"} Zvizni
-          </button>
-
-          {isAnalyzing && (
-            <>
-              <div className="flex flex-wrap justify-start my-4"> 
+        <>
+          <MenuToggle
+            isMenuVisible={isMenuVisible}
+            onClick={() => setIsMenuVisible(!isMenuVisible)}
+          />
+          {isMenuVisible && (
+            <div className="fixed top-4 right-4 bg-slate-700 text-slate-100 p-4 rounded shadow-lg max-w-xs w-full">
+              <h2>Visualization modes</h2>
+              <div className="grid grid-cols-3 gap-2 py-4">
                 {visualizationModes.map((mode) => (
                   <button
                     key={mode}
                     onClick={() => onVisualizationChange(mode)}
-                    className={`px-2 py-1 m-1 rounded ${
+                    className={`px-2 py-1 rounded ${
                       visualizationType === mode
-                        ? "bg-blue-600 text-white"
+                        ? "bg-green-500 text-white"
                         : "bg-slate-500"
                     } text-sm`}
                   >
@@ -138,7 +105,9 @@ const Controls = ({
               <div className="grid grid-cols-12 gap-4">
                 {settingsConfig.map((setting) => (
                   <React.Fragment key={setting.name}>
-                    <label className="col-span-5 text-sm">{setting.label}</label>
+                    <label className="col-span-5 text-sm">
+                      {setting.label}
+                    </label>
                     {setting.type === "range" && (
                       <>
                         <input
@@ -152,7 +121,7 @@ const Controls = ({
                           className="col-span-4"
                         />
                         <span className="col-span-3 text-right text-sm">
-                          {parseFloat(settings[setting.name]).toFixed(2)}
+                          {parseFloat(settings[setting.name])}
                         </span>
                       </>
                     )}
@@ -192,8 +161,43 @@ const Controls = ({
                   </React.Fragment>
                 ))}
               </div>
-            </>
+              <div className="grid grid-cols-3 gap-2 py-4">
+                <button
+                  onClick={clearCanvas}
+                  className="p-2 rounded bg-blue-500 text-white text-sm"
+                >
+                  Clear
+                </button>
+                <button
+                  onClick={saveCanvas}
+                  className="p-2 rounded bg-green-600 text-white text-sm"
+                >
+                  Save
+                </button>
+                <button
+                  onClick={stopAnalyzing}
+                  className="p-2 rounded bg-red-500 text-white text-sm"
+                >
+                  Stop
+                </button>
+              </div>
+            </div>
           )}
+        </>
+      )}
+
+      {!isAnalyzing && (
+        <div className="flex flex-col items-center justify-center text-slate-100 p-4 rounded shadow-lg max-w-xs w-full">
+          <div className="text-center">
+            <h1 className="text-6xl font-bold text-center">Zvizni</h1>
+            <p className="text-sm mb-4">audio visualization prototype</p>
+          </div>
+          <button
+            onClick={startAnalyzing}
+            className="px-4 py-2 rounded bg-blue-500 text-white w-3/4"
+          >
+            Start
+          </button>
         </div>
       )}
     </div>

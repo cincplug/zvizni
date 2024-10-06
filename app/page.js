@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Visualizer from "./components/Visualizer";
 import Controls from "./components/Controls";
 import { settingsConfig } from "./settingsConfig";
@@ -15,6 +15,7 @@ export default function Home() {
   const [visualizationType, setVisualizationType] = useState("flower");
   const [analyser, setAnalyser] = useState(null);
   const [settings, setSettings] = useState(defaultSettings);
+  const canvasRef = useRef(null);
 
   const handleAnalysisStateChange = (isAnalyzing, analyser) => {
     setIsAnalyzing(isAnalyzing);
@@ -33,6 +34,24 @@ export default function Home() {
     setSettings(updatedSettings);
   };
 
+  const clearCanvas = () => {
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  };
+
+  const saveCanvas = () => {
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const link = document.createElement("a");
+      link.download = "visualization.png";
+      link.href = canvas.toDataURL();
+      link.click();
+    }
+  };
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-slate-800 text-slate-100">
       <Controls
@@ -44,6 +63,8 @@ export default function Home() {
         onVolumeChange={handleVolumeChange}
         settings={settings}
         onSettingsChange={handleSettingsChange}
+        clearCanvas={clearCanvas}
+        saveCanvas={saveCanvas}
       />
       {isAnalyzing && analyser && (
         <Visualizer
@@ -52,6 +73,7 @@ export default function Home() {
           settings={settings}
           onSettingsChange={handleSettingsChange}
           settingsConfig={settingsConfig}
+          canvasRef={canvasRef}
         />
       )}
     </main>

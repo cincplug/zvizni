@@ -6,9 +6,9 @@ const Visualizer = ({
   visualizationType,
   settings,
   onSettingsChange,
-  settingsConfig
+  settingsConfig,
+  canvasRef
 }) => {
-  const canvasRef = useRef(null);
   const frameRef = useRef(1);
   const lastTimeRef = useRef(0);
 
@@ -18,7 +18,7 @@ const Visualizer = ({
 
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-  }, []);
+  }, [canvasRef]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -36,7 +36,7 @@ const Visualizer = ({
       petalRadius,
       seedRadius,
       angleModifier,
-      isClutter,
+      isMingle,
       isFill,
       saturation,
       lightness,
@@ -70,21 +70,21 @@ const Visualizer = ({
       const drawShape = (drawFn) => {
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
-        const petalRadiusValue = Math.min(centerX, centerY) * petalRadius;
+        const petalRadiusValue =
+          Math.min(centerX, centerY) * petalRadius;
 
         let prevX = centerX;
         let prevY = centerY;
 
-        if (!isClutter) {
+        if (!isMingle) {
           ctx.beginPath();
         }
         dataArray.slice(startFrequency, endFrequency).forEach((value, i) => {
-          const size = Math.max(
-            (value / 256) * petalRadiusValue,
-            seedRadiusValue
-          );
+          const size = Math.max((value / 256) * petalRadiusValue, seedRadiusValue);
           const angle =
-            ((i + startFrequency) / bufferLength) * angleModifier * Math.PI;
+            ((i + startFrequency) / bufferLength) *
+            angleModifier *
+            Math.PI;
           const x = centerX + size * Math.cos(angle);
           const y = centerY + size * Math.sin(angle);
 
@@ -95,7 +95,7 @@ const Visualizer = ({
           prevX = x;
           prevY = y;
         });
-        if (!isClutter) {
+        if (!isMingle) {
           ctx.closePath();
         }
 
@@ -103,7 +103,8 @@ const Visualizer = ({
           isFill ? "fillStyle" : "strokeStyle"
         ] = `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`;
 
-        ctx[isFill ? "strokeStyle" : "fillStyle"] = bgColor;
+        ctx[isFill ? "strokeStyle" : "fillStyle"] =
+          bgColor;
         ctx.lineWidth = border;
         ctx.fill();
         ctx.stroke();
@@ -116,7 +117,14 @@ const Visualizer = ({
     };
 
     requestAnimationFrame(draw);
-  }, [analyser, visualizationType, settings, onSettingsChange, settingsConfig]);
+  }, [
+    analyser,
+    visualizationType,
+    settings,
+    onSettingsChange,
+    settingsConfig,
+    canvasRef
+  ]);
 
   return (
     <canvas
