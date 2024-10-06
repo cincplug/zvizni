@@ -102,9 +102,11 @@ const Visualizer = ({
         ] = `hsla(${adjustedHue}, ${saturation}%, ${lightness}%, ${alpha})`;
 
         ctx[isFill ? "strokeStyle" : "fillStyle"] = bgColor;
-        ctx.lineWidth = border;
         ctx.fill();
-        ctx.stroke();
+        ctx.lineWidth = border;
+        if (border > 0) {
+          ctx.stroke();
+        }
       };
 
       const visualize = visualizations[visualizationType];
