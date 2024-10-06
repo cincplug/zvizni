@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useRef } from "react";
 import Visualizer from "./components/Visualizer";
-import Controls from "./components/Controls";
+import Controls from "./components/Menu";
 import { settingsConfig } from "./settingsConfig";
 
 export default function Home() {

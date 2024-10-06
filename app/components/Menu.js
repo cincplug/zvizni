@@ -11,7 +11,7 @@ const visualizationModes = [
   "stars"
 ];
 
-const Controls = ({
+const Menu = ({
   isAnalyzing,
   onAnalysisStateChange,
   visualizationType,
@@ -204,4 +204,4 @@ const Controls = ({
   );
 };
 
-export default Controls;
+export default Menu;
