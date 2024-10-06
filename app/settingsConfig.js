@@ -30,18 +30,27 @@ export const settingsConfig = [
     name: "petalRadius",
     label: "Petal Radius",
     min: 1,
-    max: 100,
+    max: 20,
     step: 0.1,
     value: 4,
     type: "range"
   },
   {
-    name: "colorFactor",
-    label: "Color Factor",
-    min: -5,
-    max: 10,
-    step: 0.01,
+    name: "colorfulness",
+    label: "Colorfulness",
+    min: 0,
+    max: 100,
+    step: 1,
     value: 1,
+    type: "range"
+  },
+  {
+    name: "hue",
+    label: "Hue",
+    min: 0,
+    max: 360,
+    step: 1,
+    value: 80,
     type: "range"
   },
   {

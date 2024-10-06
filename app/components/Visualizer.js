@@ -27,10 +27,10 @@ const Visualizer = ({
     const bufferLength = analyser.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
 
-    let hue = 0;
     const {
       composite,
-      colorFactor,
+      colorfulness,
+      hue,
       startFrequency,
       endFrequency,
       petalRadius,
@@ -58,8 +58,6 @@ const Visualizer = ({
       requestAnimationFrame(draw);
       analyser.getByteFrequencyData(dataArray);
 
-      hue = (hue + colorFactor * deltaTime * 0.01) % 360;
-
       const averageAmplitude =
         dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
       const seedRadiusValue = Math.max(
@@ -70,8 +68,7 @@ const Visualizer = ({
       const drawShape = (drawFn) => {
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
-        const petalRadiusValue =
-          Math.min(centerX, centerY) * petalRadius;
+        const petalRadiusValue = Math.min(centerX, centerY) * petalRadius;
 
         let prevX = centerX;
         let prevY = centerY;
@@ -80,11 +77,12 @@ const Visualizer = ({
           ctx.beginPath();
         }
         dataArray.slice(startFrequency, endFrequency).forEach((value, i) => {
-          const size = Math.max((value / 256) * petalRadiusValue, seedRadiusValue);
+          const size = Math.max(
+            (value / 256) * petalRadiusValue,
+            seedRadiusValue
+          );
           const angle =
-            ((i + startFrequency) / bufferLength) *
-            angleModifier *
-            Math.PI;
+            ((i + startFrequency) / bufferLength) * angleModifier * Math.PI;
           const x = centerX + size * Math.cos(angle);
           const y = centerY + size * Math.sin(angle);
 
@@ -101,10 +99,9 @@ const Visualizer = ({
 
         ctx[
           isFill ? "fillStyle" : "strokeStyle"
-        ] = `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`;
+        ] = `hsla(${hue + colorfulness * frameRef.current}, ${saturation}%, ${lightness}%, ${alpha})`;
 
-        ctx[isFill ? "strokeStyle" : "fillStyle"] =
-          bgColor;
+        ctx[isFill ? "strokeStyle" : "fillStyle"] = bgColor;
         ctx.lineWidth = border;
         ctx.fill();
         ctx.stroke();
