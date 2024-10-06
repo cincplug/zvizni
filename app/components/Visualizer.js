@@ -20,6 +20,11 @@ const Visualizer = ({
 
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+  }, []);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
 
     const bufferLength = analyser.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
@@ -101,8 +106,6 @@ const Visualizer = ({
     };
 
     requestAnimationFrame(draw);
-
-    return () => {};
   }, [
     analyser,
     visualizationType,
