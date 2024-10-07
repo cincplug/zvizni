@@ -96,12 +96,6 @@ export const settingsConfig = [
     type: "checkbox"
   },
   {
-    name: "isClutter",
-    label: "Clutter",
-    value: false,
-    type: "checkbox"
-  },
-  {
     name: "bgColor",
     label: "BG Color",
     value: "#1e293b",

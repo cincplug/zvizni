@@ -49,7 +49,6 @@ const Visualizer = ({
       petalRadius,
       seedRadius,
       angleModifier,
-      isClutter,
       isFill,
       saturation,
       lightness,
