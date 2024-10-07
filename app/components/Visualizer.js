@@ -54,7 +54,9 @@ const Visualizer = ({
       lightness,
       alpha,
       bgColor,
-      border
+      border,
+      isBegin,
+      isClose
     } = settings;
     ctx.globalCompositeOperation = composite;
 
@@ -73,12 +75,11 @@ const Visualizer = ({
       const averageAmplitude =
         dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
       const seedRadiusValue = Math.max(
-        (averageAmplitude) * petalRadius,
+        averageAmplitude * petalRadius,
         seedRadius
       );
 
       const drawShape = (drawFn) => {
-        ctx.beginPath();
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
         const petalRadiusValue = Math.min(centerX, centerY) * petalRadius;
@@ -104,15 +105,14 @@ const Visualizer = ({
           prevX = x;
           prevY = y;
         });
-        ctx.closePath();
 
         const adjustedHue = (hue + deltaTime) % 360;
         ctx[
           isFill ? "fillStyle" : "strokeStyle"
         ] = `hsla(${adjustedHue}, ${saturation}%, ${lightness}%, ${alpha})`;
 
-        ctx[isFill ? "strokeStyle" : "fillStyle"] = bgColor;
         ctx.closePath();
+        ctx[isFill ? "strokeStyle" : "fillStyle"] = bgColor;
         ctx.fill();
         ctx.lineWidth = border;
         if (border > 0) {
