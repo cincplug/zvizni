@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { visualizations } from "../utils/visualizations";
 
 const Visualizer = ({
@@ -11,6 +11,10 @@ const Visualizer = ({
 }) => {
   const frameRef = useRef(1);
   const lastTimeRef = useRef(0);
+  const [mousePos, setMousePos] = useState({
+    x: window.innerWidth / 2,
+    y: window.innerHeight / 2
+  });
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -18,6 +22,16 @@ const Visualizer = ({
 
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+
+    const handleMouseMove = (event) => {
+      setMousePos({ x: event.clientX, y: event.clientY });
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+    };
   }, [canvasRef]);
 
   useEffect(() => {
@@ -35,7 +49,7 @@ const Visualizer = ({
       petalRadius,
       seedRadius,
       angleModifier,
-      isMingle,
+      isClutter,
       isFill,
       saturation,
       lightness,
@@ -65,16 +79,15 @@ const Visualizer = ({
       );
 
       const drawShape = (drawFn) => {
+        ctx.beginPath();
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
         const petalRadiusValue = Math.min(centerX, centerY) * petalRadius;
 
-        let prevX = centerX;
-        let prevY = centerY;
+        let prevX = mousePos.x;
+        let prevY = mousePos.y;
 
-        if (!isMingle) {
-          ctx.beginPath();
-        }
+        ctx.beginPath();
         dataArray.slice(startFrequency, endFrequency).forEach((value, i) => {
           const size = Math.max(
             (value / 256) * petalRadiusValue,
@@ -82,8 +95,8 @@ const Visualizer = ({
           );
           const angle =
             ((i + startFrequency) / bufferLength) * angleModifier * Math.PI;
-          const x = centerX + size * Math.cos(angle);
-          const y = centerY + size * Math.sin(angle);
+          const x = mousePos.x + size * Math.cos(angle);
+          const y = mousePos.y + size * Math.sin(angle);
 
           const avgX = (prevX + x) / 2;
           const avgY = (prevY + y) / 2;
@@ -92,9 +105,7 @@ const Visualizer = ({
           prevX = x;
           prevY = y;
         });
-        if (!isMingle) {
-          ctx.closePath();
-        }
+        ctx.closePath();
 
         const adjustedHue = (hue + deltaTime) % 360;
         ctx[
@@ -102,6 +113,7 @@ const Visualizer = ({
         ] = `hsla(${adjustedHue}, ${saturation}%, ${lightness}%, ${alpha})`;
 
         ctx[isFill ? "strokeStyle" : "fillStyle"] = bgColor;
+        ctx.closePath();
         ctx.fill();
         ctx.lineWidth = border;
         if (border > 0) {
@@ -122,7 +134,8 @@ const Visualizer = ({
     settings,
     onSettingsChange,
     settingsConfig,
-    canvasRef
+    canvasRef,
+    mousePos
   ]);
 
   return (

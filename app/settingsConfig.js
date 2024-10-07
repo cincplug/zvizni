@@ -86,7 +86,7 @@ export const settingsConfig = [
     min: 0,
     max: 10,
     step: 0.1,
-    value: 0,
+    value: 0.5,
     type: "range"
   },
   {
