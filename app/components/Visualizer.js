@@ -74,7 +74,7 @@ const Visualizer = ({
       const averageAmplitude =
         dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
       const seedRadiusValue = Math.max(
-        (averageAmplitude / 1024) * petalRadius,
+        (averageAmplitude) * petalRadius,
         seedRadius
       );
 

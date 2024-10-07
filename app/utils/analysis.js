@@ -18,7 +18,7 @@ export const startAnalyzing = (onAnalysisStateChange, audioContextRef, sourceRef
         gainNodeRef.current.connect(analyserRef.current);
         analyserRef.current.connect(audioContextRef.current.destination);
   
-        analyserRef.current.fftSize = 1024;
+        analyserRef.current.fftSize = 512;
         gainNodeRef.current.gain.value = 1;
   
         onAnalysisStateChange(true, analyserRef.current);
