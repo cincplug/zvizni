@@ -47,7 +47,7 @@ const Menu = ({
           {isMenuVisible && (
             <div className="fixed top-4 right-4 bg-slate-700 text-slate-100 p-4 rounded shadow-lg max-w-xs w-full">
               <h2>Visualization modes</h2>
-              <div className="grid grid-cols-3 gap-2 py-4">
+              <div className="grid grid-cols-3 gap-3 py-4">
                 {visualizationModes.map((mode) => (
                   <button
                     key={mode}
@@ -63,7 +63,7 @@ const Menu = ({
                 ))}
               </div>
 
-              <div className="grid grid-cols-12 gap-4">
+              <div className="grid grid-cols-12 gap-3">
                 {settingsConfig.map((setting) => (
                   <React.Fragment key={setting.name}>
                     <label className="col-span-5 text-sm">
@@ -122,7 +122,7 @@ const Menu = ({
                   </React.Fragment>
                 ))}
               </div>
-              <div className="grid grid-cols-3 gap-2 py-4">
+              <div className="grid grid-cols-3 gap-3 py-4">
                 <button
                   onClick={clearCanvas}
                   className="p-2 rounded bg-blue-500 text-white text-sm"
