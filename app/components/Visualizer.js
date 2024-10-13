@@ -55,8 +55,6 @@ const Visualizer = ({
       alpha,
       bgColor,
       border,
-      isBegin,
-      isClose
     } = settings;
     ctx.globalCompositeOperation = composite;
 
@@ -69,7 +67,6 @@ const Visualizer = ({
         frameRef.current = 1;
       }
 
-      requestAnimationFrame(draw);
       analyser.getByteFrequencyData(dataArray);
 
       const averageAmplitude =
@@ -80,17 +77,13 @@ const Visualizer = ({
       );
 
       const drawShape = (drawFn) => {
-        const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2;
-        const petalRadiusValue = Math.min(centerX, centerY) * petalRadius;
-
         let prevX = mousePos.x;
         let prevY = mousePos.y;
 
         ctx.beginPath();
         dataArray.slice(startFrequency, endFrequency).forEach((value, i) => {
           const size = Math.max(
-            (value / 256) * petalRadiusValue,
+            value * petalRadius,
             seedRadiusValue
           );
           const angle =
