@@ -15,6 +15,7 @@ const Visualizer = ({
     x: window.innerWidth / 2,
     y: window.innerHeight / 2
   });
+  const isDrawingRef = useRef(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -24,13 +25,48 @@ const Visualizer = ({
     canvas.height = window.innerHeight;
 
     const handleMouseMove = (event) => {
-      mousePosRef.current = { x: event.clientX, y: event.clientY };
+      if (isDrawingRef.current) {
+        mousePosRef.current = { x: event.clientX, y: event.clientY };
+      }
+    };
+
+    const handleMouseDown = () => {
+      isDrawingRef.current = true;
+    };
+
+    const handleMouseUp = () => {
+      isDrawingRef.current = false;
+    };
+
+    const handleTouchMove = (event) => {
+      if (isDrawingRef.current) {
+        const touch = event.touches;
+        mousePosRef.current = { x: touch.clientX, y: touch.clientY };
+      }
+    };
+
+    const handleTouchStart = () => {
+      isDrawingRef.current = true;
+    };
+
+    const handleTouchEnd = () => {
+      isDrawingRef.current = false;
     };
 
     window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousedown", handleMouseDown);
+    window.addEventListener("mouseup", handleMouseUp);
+    window.addEventListener("touchmove", handleTouchMove);
+    window.addEventListener("touchstart", handleTouchStart);
+    window.addEventListener("touchend", handleTouchEnd);
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mousedown", handleMouseDown);
+      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchend", handleTouchEnd);
     };
   }, [canvasRef]);
 
@@ -59,6 +95,11 @@ const Visualizer = ({
     ctx.globalCompositeOperation = composite;
 
     const draw = (time) => {
+      if (!isDrawingRef.current) {
+        requestAnimationFrame(draw);
+        return;
+      }
+
       const deltaTime = time - lastTimeRef.current;
       lastTimeRef.current = time;
 
