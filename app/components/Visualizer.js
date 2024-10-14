@@ -11,7 +11,7 @@ const Visualizer = ({
 }) => {
   const frameRef = useRef(1);
   const lastTimeRef = useRef(0);
-  const [mousePos, setMousePos] = useState({
+  const mousePosRef = useRef({
     x: window.innerWidth / 2,
     y: window.innerHeight / 2
   });
@@ -24,7 +24,7 @@ const Visualizer = ({
     canvas.height = window.innerHeight;
 
     const handleMouseMove = (event) => {
-      setMousePos({ x: event.clientX, y: event.clientY });
+      mousePosRef.current = { x: event.clientX, y: event.clientY };
     };
 
     window.addEventListener("mousemove", handleMouseMove);
@@ -77,8 +77,8 @@ const Visualizer = ({
       );
 
       const drawShape = (drawFn) => {
-        let prevX = mousePos.x;
-        let prevY = mousePos.y;
+        let prevX = mousePosRef.current.x;
+        let prevY = mousePosRef.current.y;
 
         ctx.beginPath();
         dataArray.slice(startFrequency, endFrequency).forEach((value, i) => {
@@ -88,8 +88,8 @@ const Visualizer = ({
           );
           const angle =
             ((i + startFrequency) / bufferLength) * angleModifier * Math.PI;
-          const x = mousePos.x + size * Math.cos(angle);
-          const y = mousePos.y + size * Math.sin(angle);
+          const x = mousePosRef.current.x + size * Math.cos(angle);
+          const y = mousePosRef.current.y + size * Math.sin(angle);
 
           const avgX = (prevX + x) / 2;
           const avgY = (prevY + y) / 2;
@@ -117,6 +117,8 @@ const Visualizer = ({
       if (visualize) {
         visualize(ctx, drawShape, hue, settings);
       }
+
+      requestAnimationFrame(draw);
     };
 
     requestAnimationFrame(draw);
@@ -126,8 +128,7 @@ const Visualizer = ({
     settings,
     onSettingsChange,
     settingsConfig,
-    canvasRef,
-    mousePos
+    canvasRef
   ]);
 
   return (
