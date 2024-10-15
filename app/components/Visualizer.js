@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { visualizations } from "../utils/visualizations";
 
 const Visualizer = ({
@@ -19,7 +19,6 @@ const Visualizer = ({
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
 
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -41,7 +40,7 @@ const Visualizer = ({
     const handleTouchMove = (event) => {
       event.preventDefault();
       if (isDrawingRef.current) {
-        const touch = event.touches;
+        const touch = event.touches[0];
         mousePosRef.current = { x: touch.clientX, y: touch.clientY };
       }
     };
