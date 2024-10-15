@@ -45,8 +45,7 @@ const Menu = ({
             onClick={() => setIsMenuVisible(!isMenuVisible)}
           />
           {isMenuVisible && (
-            <div className="fixed bottom-0 left-0 right-0 bg-slate-700 text-slate-100 px-2 rounded-t-lg shadow-lg max-h-1/3 overflow-y-auto">
-              <h2 className="text-sm hidden md:block">Visualization modes</h2>
+            <div className="fixed bottom-0 left-0 right-0 md:left-auto md:w-80 bg-slate-700 text-slate-100 px-2 rounded-t-lg shadow-lg max-h-1/3 overflow-y-auto">
               <div className="grid grid-cols-3 gap-1 py-2">
                 {visualizationModes.map((mode) => (
                   <button
