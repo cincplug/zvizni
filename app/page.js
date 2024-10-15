@@ -12,7 +12,7 @@ export default function Home() {
 
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [volume, setVolume] = useState(1);
-  const [visualizationType, setVisualizationType] = useState("flower");
+  const [visualizationType, setVisualizationType] = useState("flowers");
   const [analyser, setAnalyser] = useState(null);
   const [settings, setSettings] = useState(defaultSettings);
   const canvasRef = useRef(null);

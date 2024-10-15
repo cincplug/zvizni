@@ -3,7 +3,7 @@ import React from "react";
 const MenuToggle = ({ isMenuVisible, onClick }) => (
   <button
     onClick={onClick}
-    className="fixed top-4 right-4 z-10 text-slate-100 p-2 shadow-lg"
+    className="fixed top-0 right-0 z-10 text-slate-100 p-2 shadow-lg"
   >
     {isMenuVisible ? (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

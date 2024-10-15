@@ -2,15 +2,9 @@ import React, { useRef, useState } from "react";
 import { settingsConfig } from "../settingsConfig";
 import MenuToggle from "./MenuToggle";
 import { startAnalyzing, stopAnalyzing } from "../utils/analysis";
+import { visualizations } from "../utils/visualizations";
 
-const visualizationModes = [
-  "flower",
-  "squares",
-  "circles",
-  "triangles",
-  "hexagons",
-  "stars"
-];
+const visualizationModes = Object.keys(visualizations);
 
 const Menu = ({
   isAnalyzing,
@@ -45,7 +39,8 @@ const Menu = ({
             onClick={() => setIsMenuVisible(!isMenuVisible)}
           />
           {isMenuVisible && (
-            <div className="fixed bottom-0 left-0 right-0 md:left-auto md:w-80 bg-slate-700 text-slate-100 px-2 rounded-t-lg shadow-lg max-h-1/3 overflow-y-auto">
+            <div className="fixed top-0 left-0 right-0 md:left-auto md:w-80 bg-slate-700 text-slate-100 px-2 shadow-lg max-h-1/3 overflow-y-auto">
+              <h2 className="mt-2">Zvizni</h2>
               <div className="grid grid-cols-3 gap-1 py-2">
                 {visualizationModes.map((mode) => (
                   <button

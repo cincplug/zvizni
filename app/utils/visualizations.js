@@ -1,5 +1,5 @@
 export const visualizations = {
-  flower: (ctx, drawShape, hue, settings) => {
+  flowers: (ctx, drawShape, hue, settings) => {
     drawShape(
       (x, y) => {
         ctx.lineTo(x, y);
