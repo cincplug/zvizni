@@ -12,6 +12,14 @@ const visualizationModes = [
   "stars"
 ];
 
+const isMobileDevice = () => {
+  return (
+    "ontouchstart" in window ||
+    navigator.maxTouchPoints > 0 ||
+    navigator.msMaxTouchPoints > 0
+  );
+};
+
 const Menu = ({
   isAnalyzing,
   onAnalysisStateChange,
@@ -22,7 +30,7 @@ const Menu = ({
   clearCanvas,
   saveCanvas
 }) => {
-  const [isMenuVisible, setIsMenuVisible] = useState(true);
+  const [isMenuVisible, setIsMenuVisible] = useState(!isMobileDevice());
   const audioContextRef = useRef(null);
   const sourceRef = useRef(null);
   const analyserRef = useRef(null);
@@ -136,7 +144,9 @@ const Menu = ({
                   Save
                 </button>
                 <button
-                  onClick={() => stopAnalyzing(onAnalysisStateChange, audioContextRef)}
+                  onClick={() =>
+                    stopAnalyzing(onAnalysisStateChange, audioContextRef)
+                  }
                   className="p-2 rounded bg-red-500 text-white text-sm"
                 >
                   Stop
@@ -154,7 +164,15 @@ const Menu = ({
             <p className="text-sm mb-4">audio visualization prototype</p>
           </div>
           <button
-            onClick={() => startAnalyzing(onAnalysisStateChange, audioContextRef, sourceRef, analyserRef, gainNodeRef)}
+            onClick={() =>
+              startAnalyzing(
+                onAnalysisStateChange,
+                audioContextRef,
+                sourceRef,
+                analyserRef,
+                gainNodeRef
+              )
+            }
             className="px-4 py-2 rounded bg-blue-500 text-white w-3/4"
           >
             Start
