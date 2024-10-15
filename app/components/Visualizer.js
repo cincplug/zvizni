@@ -12,8 +12,8 @@ const Visualizer = ({
   const frameRef = useRef(1);
   const lastTimeRef = useRef(0);
   const mousePosRef = useRef({
-    x: window.innerWidth / 2,
-    y: window.innerHeight / 2
+    x: window.innerWidth,
+    y: window.innerHeight
   });
   const isDrawingRef = useRef(false);
 
@@ -85,7 +85,6 @@ const Visualizer = ({
       startFrequency,
       endFrequency,
       petalRadius,
-      seedRadius,
       angleModifier,
       isFill,
       saturation,
@@ -114,10 +113,7 @@ const Visualizer = ({
 
       const averageAmplitude =
         dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
-      const seedRadiusValue = Math.max(
-        averageAmplitude * petalRadius,
-        seedRadius
-      );
+      const seedRadiusValue = Math.max(averageAmplitude, petalRadius / averageAmplitude);
 
       const drawShape = (drawFn) => {
         let prevX = mousePosRef.current.x;

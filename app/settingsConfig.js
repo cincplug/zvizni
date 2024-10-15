@@ -18,15 +18,6 @@ export const settingsConfig = [
     type: "range"
   },
   {
-    name: "seedRadius",
-    label: "Seed Radius",
-    min: 1,
-    max: 100,
-    step: 0.1,
-    value: 5,
-    type: "range"
-  },
-  {
     name: "petalRadius",
     label: "Petal Radius",
     min: 1,

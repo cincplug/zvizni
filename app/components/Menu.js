@@ -12,14 +12,6 @@ const visualizationModes = [
   "stars"
 ];
 
-const isMobileDevice = () => {
-  return (
-    "ontouchstart" in window ||
-    navigator.maxTouchPoints > 0 ||
-    navigator.msMaxTouchPoints > 0
-  );
-};
-
 const Menu = ({
   isAnalyzing,
   onAnalysisStateChange,
@@ -30,7 +22,7 @@ const Menu = ({
   clearCanvas,
   saveCanvas
 }) => {
-  const [isMenuVisible, setIsMenuVisible] = useState(!isMobileDevice());
+  const [isMenuVisible, setIsMenuVisible] = useState(true);
   const audioContextRef = useRef(null);
   const sourceRef = useRef(null);
   const analyserRef = useRef(null);
@@ -53,32 +45,32 @@ const Menu = ({
             onClick={() => setIsMenuVisible(!isMenuVisible)}
           />
           {isMenuVisible && (
-            <div className="fixed top-4 right-4 bg-slate-700 text-slate-100 p-4 rounded shadow-lg max-w-xs w-full">
-              <h2>Visualization modes</h2>
-              <div className="grid grid-cols-3 gap-3 py-4">
+            <div className="fixed bottom-0 left-0 right-0 bg-slate-700 text-slate-100 px-2 rounded-t-lg shadow-lg max-h-1/3 overflow-y-auto">
+              <h2 className="text-sm hidden md:block">Visualization modes</h2>
+              <div className="grid grid-cols-3 gap-1 py-2">
                 {visualizationModes.map((mode) => (
                   <button
                     key={mode}
                     onClick={() => onVisualizationChange(mode)}
-                    className={`px-2 py-1 rounded ${
+                    className={`px-1 py-1 rounded text-xs ${
                       visualizationType === mode
                         ? "bg-green-500 text-white"
                         : "bg-slate-500"
-                    } text-sm`}
+                    }`}
                   >
                     {mode.charAt(0).toUpperCase() + mode.slice(1)}
                   </button>
                 ))}
               </div>
 
-              <div className="grid grid-cols-12 gap-3">
-                {settingsConfig.map((setting) => (
-                  <React.Fragment key={setting.name}>
-                    <label className="col-span-5 text-sm">
-                      {setting.label}
-                    </label>
-                    {setting.type === "range" && (
-                      <>
+              <div className="grid grid-cols-3 gap-2">
+                {settingsConfig.map(
+                  (setting) =>
+                    setting.type === "range" && (
+                      <div key={setting.name}>
+                        <label className="text-xs truncate">
+                          {setting.label}
+                        </label>
                         <input
                           type="range"
                           name={setting.name}
@@ -87,59 +79,22 @@ const Menu = ({
                           step={setting.step}
                           value={settings[setting.name]}
                           onChange={handleChange}
-                          className="col-span-4"
-                        />
-                        <span className="col-span-3 text-right text-sm">
-                          {parseFloat(settings[setting.name])}
-                        </span>
-                      </>
-                    )}
-                    {setting.type === "checkbox" && (
-                      <div className="col-span-5 flex justify-start">
-                        <input
-                          type="checkbox"
-                          name={setting.name}
-                          checked={settings[setting.name]}
-                          onChange={handleChange}
+                          className="w-full"
                         />
                       </div>
-                    )}
-                    {setting.type === "color" && (
-                      <input
-                        type="color"
-                        name={setting.name}
-                        value={settings[setting.name]}
-                        onChange={handleChange}
-                        className="col-span-5"
-                      />
-                    )}
-                    {setting.type === "select" && (
-                      <select
-                        name={setting.name}
-                        value={settings[setting.name]}
-                        onChange={handleChange}
-                        className="col-span-7 bg-white text-black text-sm rounded"
-                      >
-                        {setting.options.map((option) => (
-                          <option key={option} value={option}>
-                            {option.charAt(0).toUpperCase() + option.slice(1)}
-                          </option>
-                        ))}
-                      </select>
-                    )}
-                  </React.Fragment>
-                ))}
+                    )
+                )}
               </div>
-              <div className="grid grid-cols-3 gap-3 py-4">
+              <div className="grid grid-cols-3 gap-1 py-2">
                 <button
                   onClick={clearCanvas}
-                  className="p-2 rounded bg-blue-500 text-white text-sm"
+                  className="p-1 rounded bg-blue-500 text-white text-xs"
                 >
                   Clear
                 </button>
                 <button
                   onClick={saveCanvas}
-                  className="p-2 rounded bg-green-600 text-white text-sm"
+                  className="p-1 rounded bg-green-600 text-white text-xs"
                 >
                   Save
                 </button>
@@ -147,7 +102,7 @@ const Menu = ({
                   onClick={() =>
                     stopAnalyzing(onAnalysisStateChange, audioContextRef)
                   }
-                  className="p-2 rounded bg-red-500 text-white text-sm"
+                  className="p-1 rounded bg-red-500 text-white text-xs"
                 >
                   Stop
                 </button>
