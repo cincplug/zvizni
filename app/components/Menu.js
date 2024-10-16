@@ -58,26 +58,21 @@ const Menu = ({
               </div>
 
               <div className="grid grid-cols-3 gap-2">
-                {settingsConfig.map(
-                  (setting) =>
-                    setting.type === "range" && (
-                      <div key={setting.name}>
-                        <label className="text-xs truncate">
-                          {setting.label}
-                        </label>
-                        <input
-                          type="range"
-                          name={setting.name}
-                          min={setting.min}
-                          max={setting.max}
-                          step={setting.step}
-                          value={settings[setting.name]}
-                          onChange={handleChange}
-                          className="w-full"
-                        />
-                      </div>
-                    )
-                )}
+                {settingsConfig.map((setting) => (
+                  <div key={setting.name}>
+                    <label className="text-xs truncate">{setting.label}</label>
+                    <input
+                      type="range"
+                      name={setting.name}
+                      min={setting.min}
+                      max={setting.max}
+                      step={setting.step}
+                      value={settings[setting.name]}
+                      onChange={handleChange}
+                      className="w-full"
+                    />
+                  </div>
+                ))}
               </div>
               <div className="grid grid-cols-3 gap-1 py-2">
                 <button

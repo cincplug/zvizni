@@ -12,8 +12,8 @@ const Visualizer = ({
   const frameRef = useRef(1);
   const lastTimeRef = useRef(0);
   const mousePosRef = useRef({
-    x: window.innerWidth,
-    y: window.innerHeight
+    x: window.innerWidth / 2,
+    y: window.innerHeight / 2
   });
   const isDrawingRef = useRef(false);
 
@@ -75,10 +75,10 @@ const Visualizer = ({
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
-
+  
     const bufferLength = analyser.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
-
+  
     const {
       composite,
       hue,
@@ -92,59 +92,65 @@ const Visualizer = ({
       alpha,
       bgColor,
       border,
+      hasMouseX,
     } = settings;
     ctx.globalCompositeOperation = composite;
-
+  
     const draw = (time) => {
-      if (!isDrawingRef.current) {
+      if (!isDrawingRef.current && hasMouseX) {
         requestAnimationFrame(draw);
         return;
       }
-
+  
       const deltaTime = time - lastTimeRef.current;
       lastTimeRef.current = time;
-
-      frameRef.current += 1;
-      if (frameRef.current > 100) {
-        frameRef.current = 1;
+  
+      if (!hasMouseX) {
+        mousePosRef.current.x = frameRef.current;
       }
-
+  
+      const frameLimit = window.innerWidth;
+      frameRef.current += 1;
+      if (frameRef.current > frameLimit) {
+        frameRef.current = 0;
+      }
+  
       analyser.getByteFrequencyData(dataArray);
-
+  
       const averageAmplitude =
         dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
       const seedRadiusValue = averageAmplitude * petalRadius;
-
+  
       const drawShape = (drawFn) => {
         let prevX = mousePosRef.current.x;
         let prevY = mousePosRef.current.y;
-      
+  
         ctx.beginPath();
-      
+  
         const pointsInFullCircle = dataArray.slice(startFrequency, endFrequency);
         const totalPoints = pointsInFullCircle.length;
-      
+  
         pointsInFullCircle.forEach((value, i) => {
           const size = Math.max(value * petalRadius, seedRadiusValue);
-      
-          // Distribute angles evenly across the full circle
+  
           const angle = (i / totalPoints) * angleModifier;
-      
-          const x = mousePosRef.current.x + size * Math.cos(angle);
+  
+          const x = hasMouseX
+            ? mousePosRef.current.x + size * Math.cos(angle)
+            : frameRef.current + size * Math.cos(angle);
           const y = mousePosRef.current.y + size * Math.sin(angle);
-      
+  
           const avgX = (prevX + x) / 2;
           const avgY = (prevY + y) / 2;
-      
-          // Draw the petal
+  
           drawFn(avgX, avgY, size);
           prevX = x;
           prevY = y;
         });
-      
+  
         const adjustedHue = (hue + deltaTime) % 360;
         ctx[isFill ? "fillStyle" : "strokeStyle"] = `hsla(${adjustedHue}, ${saturation}%, ${lightness}%, ${alpha})`;
-      
+  
         ctx.closePath();
         ctx[isFill ? "strokeStyle" : "fillStyle"] = bgColor;
         ctx.fill();
@@ -153,16 +159,15 @@ const Visualizer = ({
           ctx.stroke();
         }
       };
-            
-
+  
       const visualize = visualizations[visualizationType];
       if (visualize) {
         visualize(ctx, drawShape, hue, settings);
       }
-
+  
       requestAnimationFrame(draw);
     };
-
+  
     requestAnimationFrame(draw);
   }, [
     analyser,
@@ -172,6 +177,7 @@ const Visualizer = ({
     settingsConfig,
     canvasRef
   ]);
+  
 
   return (
     <canvas
