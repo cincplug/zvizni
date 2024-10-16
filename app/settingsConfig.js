@@ -1,7 +1,7 @@
 export const settingsConfig = [
   {
     name: "startFrequency",
-    label: "Start Frequency",
+    label: "Start Freq",
     min: 0,
     max: 512,
     step: 1,
@@ -10,7 +10,7 @@ export const settingsConfig = [
   },
   {
     name: "endFrequency",
-    label: "End Frequency",
+    label: "End Freq",
     min: 0,
     max: 2048,
     step: 1,
@@ -18,19 +18,19 @@ export const settingsConfig = [
     type: "range"
   },
   {
-    name: "petalRadius",
-    label: "Petal Radius",
+    name: "thickness",
+    label: "Thickness",
     min: 1,
-    max: 20,
+    max: 40,
     step: 0.1,
-    value: 4,
+    value: 8,
     type: "range"
   },
   {
-    name: "angleModifier",
-    label: "Angle Modifier",
+    name: "angleRange",
+    label: "Angle range",
     min: 1,
-    max: 100,
+    max: 360,
     step: 1,
     value: 50,
     type: "range"
@@ -89,13 +89,13 @@ export const settingsConfig = [
   {
     name: "hasMouseX",
     label: "Mouse X",
-    value: false,
+    value: true,
     type: "checkbox"
   },
   {
     name: "hasMouseY",
     label: "Mouse Y",
-    value: false,
+    value: true,
     type: "checkbox"
   },
   {
