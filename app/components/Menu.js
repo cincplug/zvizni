@@ -61,16 +61,53 @@ const Menu = ({
                 {settingsConfig.map((setting) => (
                   <div key={setting.name}>
                     <label className="text-xs truncate">{setting.label}</label>
-                    <input
-                      type="range"
-                      name={setting.name}
-                      min={setting.min}
-                      max={setting.max}
-                      step={setting.step}
-                      value={settings[setting.name]}
-                      onChange={handleChange}
-                      className="w-full"
-                    />
+                    {setting.type === "range" && (
+                      <>
+                        <input
+                          type="range"
+                          name={setting.name}
+                          min={setting.min}
+                          max={setting.max}
+                          step={setting.step}
+                          value={settings[setting.name]}
+                          onChange={handleChange}
+                          className="max-w-full"
+                        />
+                      </>
+                    )}
+                    {setting.type === "checkbox" && (
+                      <div className="col-span-5 flex justify-start">
+                        <input
+                          type="checkbox"
+                          name={setting.name}
+                          checked={settings[setting.name]}
+                          onChange={handleChange}
+                        />
+                      </div>
+                    )}
+                    {setting.type === "color" && (
+                      <input
+                        type="color"
+                        name={setting.name}
+                        value={settings[setting.name]}
+                        onChange={handleChange}
+                        className="bg-transparent"
+                      />
+                    )}
+                    {setting.type === "select" && (
+                      <select
+                        name={setting.name}
+                        value={settings[setting.name]}
+                        onChange={handleChange}
+                        className="max-w-full bg-white text-black text-xs rounded"
+                      >
+                        {setting.options.map((option) => (
+                          <option key={option} value={option}>
+                            {option.charAt(0).toUpperCase() + option.slice(1)}
+                          </option>
+                        ))}
+                      </select>
+                    )}
                   </div>
                 ))}
               </div>
