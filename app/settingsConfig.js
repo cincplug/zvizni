@@ -87,16 +87,11 @@ export const settingsConfig = [
     type: "checkbox"
   },
   {
-    name: "hasMouseX",
-    label: "Mouse X",
-    value: true,
-    type: "checkbox"
-  },
-  {
-    name: "hasMouseY",
-    label: "Mouse Y",
-    value: true,
-    type: "checkbox"
+    name: "loopType",
+    label: "Loop type",
+    value: "none",
+    type: "select",
+    options: ["none", "x", "y"]
   },
   {
     name: "bgColor",

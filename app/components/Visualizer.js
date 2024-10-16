@@ -78,8 +78,7 @@ const Visualizer = ({
       alpha,
       bgColor,
       border,
-      hasMouseX,
-      hasMouseY
+      loopType
     } = settings;
     ctx.globalCompositeOperation = composite;
 
@@ -92,27 +91,24 @@ const Visualizer = ({
 
       frameRef.current += 1;
 
-      if (!hasMouseX && frameRef.current > frameLimitX) {
+      if (loopType === "x" && frameRef.current > frameLimitX) {
         frameRef.current = 0;
       }
-      if (!hasMouseY && frameRef.current > frameLimitY) {
+      if (loopType === "y" && frameRef.current > frameLimitY) {
         frameRef.current = 0;
       }
 
       let x, y;
-      if (hasMouseX && hasMouseY) {
+      if (loopType === "none") {
         x = mousePosRef.current.x;
         y = mousePosRef.current.y;
-      } else if (hasMouseX) {
+      } else if (loopType === "y") {
         x = mousePosRef.current.x;
         y = frameRef.current;
-      } else if (hasMouseY) {
+      } else if (loopType === "x") {
         x = frameRef.current;
         y = mousePosRef.current.y;
-      } else {
-        x = window.innerWidth / 2;
-        y = window.innerHeight / 2;
-      }
+      } 
 
       analyser.getByteFrequencyData(dataArray);
 
