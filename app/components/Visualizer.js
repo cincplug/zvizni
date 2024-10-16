@@ -113,36 +113,38 @@ const Visualizer = ({
 
       const averageAmplitude =
         dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
-      const seedRadiusValue = Math.max(averageAmplitude, petalRadius / averageAmplitude);
+      const seedRadiusValue = averageAmplitude * petalRadius;
 
       const drawShape = (drawFn) => {
         let prevX = mousePosRef.current.x;
         let prevY = mousePosRef.current.y;
-
+      
         ctx.beginPath();
-        dataArray.slice(startFrequency, endFrequency).forEach((value, i) => {
-          const size = Math.max(
-            value * petalRadius,
-            seedRadiusValue
-          );
-          const angle =
-            ((i + startFrequency) / bufferLength) * angleModifier * Math.PI;
+      
+        const pointsInFullCircle = dataArray.slice(startFrequency, endFrequency);
+        const totalPoints = pointsInFullCircle.length;
+      
+        pointsInFullCircle.forEach((value, i) => {
+          const size = Math.max(value * petalRadius, seedRadiusValue);
+      
+          // Distribute angles evenly across the full circle
+          const angle = (i / totalPoints) * angleModifier;
+      
           const x = mousePosRef.current.x + size * Math.cos(angle);
           const y = mousePosRef.current.y + size * Math.sin(angle);
-
+      
           const avgX = (prevX + x) / 2;
           const avgY = (prevY + y) / 2;
-
+      
+          // Draw the petal
           drawFn(avgX, avgY, size);
           prevX = x;
           prevY = y;
         });
-
+      
         const adjustedHue = (hue + deltaTime) % 360;
-        ctx[
-          isFill ? "fillStyle" : "strokeStyle"
-        ] = `hsla(${adjustedHue}, ${saturation}%, ${lightness}%, ${alpha})`;
-
+        ctx[isFill ? "fillStyle" : "strokeStyle"] = `hsla(${adjustedHue}, ${saturation}%, ${lightness}%, ${alpha})`;
+      
         ctx.closePath();
         ctx[isFill ? "strokeStyle" : "fillStyle"] = bgColor;
         ctx.fill();
@@ -151,6 +153,7 @@ const Visualizer = ({
           ctx.stroke();
         }
       };
+            
 
       const visualize = visualizations[visualizationType];
       if (visualize) {

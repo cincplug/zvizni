@@ -5,16 +5,16 @@ export const settingsConfig = [
     min: 0,
     max: 512,
     step: 1,
-    value: 100,
+    value: 60,
     type: "range"
   },
   {
     name: "endFrequency",
     label: "End Frequency",
     min: 0,
-    max: 512,
+    max: 2048,
     step: 1,
-    value: 400,
+    value: 1974,
     type: "range"
   },
   {
@@ -24,6 +24,15 @@ export const settingsConfig = [
     max: 20,
     step: 0.1,
     value: 4,
+    type: "range"
+  },
+  {
+    name: "angleModifier",
+    label: "Angle Modifier",
+    min: 1,
+    max: 100,
+    step: 1,
+    value: 50,
     type: "range"
   },
   {
@@ -60,15 +69,6 @@ export const settingsConfig = [
     max: 1,
     step: 0.01,
     value: 0.1,
-    type: "range"
-  },
-  {
-    name: "angleModifier",
-    label: "Angle Modifier",
-    min: 1,
-    max: 10,
-    step: 0.1,
-    value: 4,
     type: "range"
   },
   {
