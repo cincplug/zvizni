@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import Image from "next/image";
 import { settingsConfig } from "../settingsConfig";
 import MenuToggle from "./MenuToggle";
 import { startAnalyzing, stopAnalyzing } from "../utils/analysis";
@@ -141,8 +142,9 @@ const Menu = ({
       {!isAnalyzing && (
         <div className="flex flex-col items-center justify-center text-slate-100 p-4 rounded shadow-lg max-w-xs w-full">
           <div className="text-center">
+            <Image src="/zvizni.png" alt="Zvizni logo" width="768" height="768" />
             <h1 className="text-6xl font-bold text-center">Zvizni</h1>
-            <p className="text-sm mb-4">audio visualization prototype</p>
+            <p className="text-md mb-4">Draw while making some sound</p>
           </div>
           <button
             onClick={() =>
