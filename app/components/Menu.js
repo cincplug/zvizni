@@ -10,8 +10,6 @@ const visualizationModes = Object.keys(visualizations);
 const Menu = ({
   isAnalyzing,
   onAnalysisStateChange,
-  visualizationType,
-  onVisualizationChange,
   settings,
   onSettingsChange,
   clearCanvas,
@@ -42,22 +40,6 @@ const Menu = ({
           {isMenuVisible && (
             <div className="fixed top-0 left-0 right-0 md:left-auto md:w-80 bg-slate-700 text-slate-100 px-2 shadow-lg max-h-1/3 overflow-y-auto">
               <h2 className="mt-2">Zvizni</h2>
-              <div className="grid grid-cols-3 gap-1 py-2">
-                {visualizationModes.map((mode) => (
-                  <button
-                    key={mode}
-                    onClick={() => onVisualizationChange(mode)}
-                    className={`px-1 py-1 rounded text-xs ${
-                      visualizationType === mode
-                        ? "bg-green-500 text-white"
-                        : "bg-slate-500"
-                    }`}
-                  >
-                    {mode.charAt(0).toUpperCase() + mode.slice(1)}
-                  </button>
-                ))}
-              </div>
-
               <div className="grid grid-cols-3 gap-2">
                 {settingsConfig.map((setting) => (
                   <div key={setting.name}>

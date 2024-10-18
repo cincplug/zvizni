@@ -94,6 +94,13 @@ export const settingsConfig = [
     options: ["none", "x", "y"]
   },
   {
+    name: "shapeType",
+    label: "Shape type",
+    value: "flowers",
+    type: "select",
+    options: ["flowers", "squares", "triangles", "circles", "hexagons", "stars"]
+  },
+  {
     name: "bgColor",
     label: "BG Color",
     value: "#1e293b",

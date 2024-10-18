@@ -57,7 +57,6 @@ export default function Home() {
       <Menu
         isAnalyzing={isAnalyzing}
         onAnalysisStateChange={handleAnalysisStateChange}
-        visualizationType={visualizationType}
         onVisualizationChange={handleVisualizationChange}
         volume={volume}
         onVolumeChange={handleVolumeChange}
@@ -69,10 +68,7 @@ export default function Home() {
       {isAnalyzing && analyser && (
         <Visualizer
           analyser={analyser}
-          visualizationType={visualizationType}
           settings={settings}
-          onSettingsChange={handleSettingsChange}
-          settingsConfig={settingsConfig}
           canvasRef={canvasRef}
         />
       )}

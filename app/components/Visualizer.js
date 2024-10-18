@@ -3,7 +3,6 @@ import { visualizations } from "../utils/visualizations";
 
 const Visualizer = ({
   analyser,
-  visualizationType,
   settings,
   canvasRef
 }) => {
@@ -140,7 +139,7 @@ const Visualizer = ({
         }
       };
 
-      const visualize = visualizations[visualizationType];
+      const visualize = visualizations[settingsRef.current.shapeType];
       if (visualize) {
         visualize(ctx, drawShape, settingsRef.current.hue, settingsRef.current);
       }
@@ -149,7 +148,7 @@ const Visualizer = ({
     };
 
     requestAnimationFrame(draw);
-  }, [analyser, visualizationType, canvasRef]);
+  }, [analyser, canvasRef]);
 
   return (
     <canvas
