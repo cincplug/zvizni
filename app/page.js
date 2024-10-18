@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useRef } from "react";
 import Visualizer from "./components/Visualizer";
-import Controls from "./components/Menu";
+import Menu from "./components/Menu";
 import { settingsConfig } from "./settingsConfig";
 
 export default function Home() {
@@ -54,7 +54,7 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-slate-800 text-slate-100">
-      <Controls
+      <Menu
         isAnalyzing={isAnalyzing}
         onAnalysisStateChange={handleAnalysisStateChange}
         visualizationType={visualizationType}
