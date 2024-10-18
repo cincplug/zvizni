@@ -124,7 +124,7 @@ const Menu = ({
       {!isAnalyzing && (
         <div className="flex flex-col items-center justify-center text-slate-100 p-4 rounded shadow-lg max-w-xs w-full">
           <div className="text-center">
-            <Image src="/zvizni.png" alt="Zvizni logo" width="768" height="768" />
+            <Image src="/zvizni.png" alt="Zvizni logo" width="768" height="768" priority />
             <h1 className="text-6xl font-bold text-center">Zvizni</h1>
             <p className="text-md mb-4">Draw while making some sound</p>
           </div>
