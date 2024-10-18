@@ -5,8 +5,6 @@ const Visualizer = ({
   analyser,
   visualizationType,
   settings,
-  onSettingsChange,
-  settingsConfig,
   canvasRef
 }) => {
   const frameRef = useRef(1);
@@ -16,6 +14,11 @@ const Visualizer = ({
     y: window.innerHeight / 2
   });
   const isDrawingRef = useRef(true);
+  const settingsRef = useRef(settings);
+
+  useEffect(() => {
+    settingsRef.current = settings;
+  }, [settings]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -65,23 +68,6 @@ const Visualizer = ({
     const bufferLength = analyser.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
 
-    const {
-      composite,
-      hue,
-      startFrequency,
-      endFrequency,
-      thickness,
-      angleRange,
-      isFill,
-      saturation,
-      lightness,
-      alpha,
-      bgColor,
-      border,
-      loopType
-    } = settings;
-    ctx.globalCompositeOperation = composite;
-
     const draw = (time) => {
       const deltaTime = time - lastTimeRef.current;
       lastTimeRef.current = time;
@@ -91,30 +77,29 @@ const Visualizer = ({
 
       frameRef.current += 1;
 
-      if (loopType === "x" && frameRef.current > frameLimitX) {
+      if (settingsRef.current.loopType === "x" && frameRef.current > frameLimitX) {
         frameRef.current = 0;
       }
-      if (loopType === "y" && frameRef.current > frameLimitY) {
+      if (settingsRef.current.loopType === "y" && frameRef.current > frameLimitY) {
         frameRef.current = 0;
       }
 
       let x, y;
-      if (loopType === "none") {
+      if (settingsRef.current.loopType === "none") {
         x = mousePosRef.current.x;
         y = mousePosRef.current.y;
-      } else if (loopType === "y") {
+      } else if (settingsRef.current.loopType === "y") {
         x = mousePosRef.current.x;
         y = frameRef.current;
-      } else if (loopType === "x") {
+      } else if (settingsRef.current.loopType === "x") {
         x = frameRef.current;
         y = mousePosRef.current.y;
-      } 
+      }
 
       analyser.getByteFrequencyData(dataArray);
 
-      const averageAmplitude =
-        dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
-      const seedRadiusValue = averageAmplitude * thickness;
+      const averageAmplitude = dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
+      const seedRadiusValue = averageAmplitude * settingsRef.current.thickness;
 
       const drawShape = (drawFn) => {
         let prevX = x;
@@ -123,14 +108,14 @@ const Visualizer = ({
         ctx.beginPath();
 
         const pointsInFullCircle = dataArray.slice(
-          startFrequency,
-          endFrequency
+          settingsRef.current.startFrequency,
+          settingsRef.current.endFrequency
         );
         const totalPoints = pointsInFullCircle.length;
 
         pointsInFullCircle.forEach((value, i) => {
-          const size = Math.max(value * thickness, seedRadiusValue);
-          const angle = (i / totalPoints) * angleRange;
+          const size = Math.max(value * settingsRef.current.thickness, seedRadiusValue);
+          const angle = (i / totalPoints) * settingsRef.current.angleRange;
 
           const pointX = x + size * Math.cos(angle);
           const pointY = y + size * Math.sin(angle);
@@ -143,37 +128,28 @@ const Visualizer = ({
           prevY = pointY;
         });
 
-        const adjustedHue = (hue + deltaTime) % 360;
-        ctx[
-          isFill ? "fillStyle" : "strokeStyle"
-        ] = `hsla(${adjustedHue}, ${saturation}%, ${lightness}%, ${alpha})`;
+        const adjustedHue = (settingsRef.current.hue + deltaTime) % 360;
+        ctx[settingsRef.current.isFill ? "fillStyle" : "strokeStyle"] = `hsla(${adjustedHue}, ${settingsRef.current.saturation}%, ${settingsRef.current.lightness}%, ${settingsRef.current.alpha})`;
 
         ctx.closePath();
-        ctx[isFill ? "strokeStyle" : "fillStyle"] = bgColor;
+        ctx[settingsRef.current.isFill ? "strokeStyle" : "fillStyle"] = settingsRef.current.bgColor;
         ctx.fill();
-        ctx.lineWidth = border;
-        if (border > 0) {
+        ctx.lineWidth = settingsRef.current.border;
+        if (settingsRef.current.border > 0) {
           ctx.stroke();
         }
       };
 
       const visualize = visualizations[visualizationType];
       if (visualize) {
-        visualize(ctx, drawShape, hue, settings);
+        visualize(ctx, drawShape, settingsRef.current.hue, settingsRef.current);
       }
 
       requestAnimationFrame(draw);
     };
 
     requestAnimationFrame(draw);
-  }, [
-    analyser,
-    visualizationType,
-    settings,
-    onSettingsChange,
-    settingsConfig,
-    canvasRef
-  ]);
+  }, [analyser, visualizationType, canvasRef]);
 
   return (
     <canvas
