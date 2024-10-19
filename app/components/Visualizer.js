@@ -1,11 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { visualizations } from "../utils/visualizations";
 
-const Visualizer = ({
-  analyser,
-  settings,
-  canvasRef
-}) => {
+const Visualizer = ({ analyser, settings, canvasRef }) => {
   const frameRef = useRef(1);
   const lastTimeRef = useRef(0);
   const mousePosRef = useRef({
@@ -71,26 +67,42 @@ const Visualizer = ({
       const deltaTime = time - lastTimeRef.current;
       lastTimeRef.current = time;
 
+      const {
+        loopType,
+        thickness,
+        startFrequency,
+        endFrequency,
+        angleRange,
+        hue,
+        saturation,
+        lightness,
+        alpha,
+        isFill,
+        border,
+        bgColor,
+        shapeType
+      } = settingsRef.current;
+
       const frameLimitX = window.innerWidth;
       const frameLimitY = window.innerHeight;
 
       frameRef.current += 1;
 
-      if (settingsRef.current.loopType === "x" && frameRef.current > frameLimitX) {
+      if (loopType === "x" && frameRef.current > frameLimitX) {
         frameRef.current = 0;
       }
-      if (settingsRef.current.loopType === "y" && frameRef.current > frameLimitY) {
+      if (loopType === "y" && frameRef.current > frameLimitY) {
         frameRef.current = 0;
       }
 
       let x, y;
-      if (settingsRef.current.loopType === "none") {
+      if (loopType === "none") {
         x = mousePosRef.current.x;
         y = mousePosRef.current.y;
-      } else if (settingsRef.current.loopType === "y") {
+      } else if (loopType === "y") {
         x = mousePosRef.current.x;
         y = frameRef.current;
-      } else if (settingsRef.current.loopType === "x") {
+      } else if (loopType === "x") {
         x = frameRef.current;
         y = mousePosRef.current.y;
       }
@@ -98,7 +110,7 @@ const Visualizer = ({
       analyser.getByteFrequencyData(dataArray);
 
       const averageAmplitude = dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
-      const seedRadiusValue = averageAmplitude * settingsRef.current.thickness;
+      const seedRadiusValue = averageAmplitude * thickness;
 
       const drawShape = (drawFn) => {
         let prevX = x;
@@ -106,15 +118,12 @@ const Visualizer = ({
 
         ctx.beginPath();
 
-        const pointsInFullCircle = dataArray.slice(
-          settingsRef.current.startFrequency,
-          settingsRef.current.endFrequency
-        );
+        const pointsInFullCircle = dataArray.slice(startFrequency, endFrequency);
         const totalPoints = pointsInFullCircle.length;
 
         pointsInFullCircle.forEach((value, i) => {
-          const size = Math.max(value * settingsRef.current.thickness, seedRadiusValue);
-          const angle = (i / totalPoints) * settingsRef.current.angleRange;
+          const size = Math.max(value * thickness, seedRadiusValue);
+          const angle = (i / totalPoints) * angleRange;
 
           const pointX = x + size * Math.cos(angle);
           const pointY = y + size * Math.sin(angle);
@@ -127,21 +136,21 @@ const Visualizer = ({
           prevY = pointY;
         });
 
-        const adjustedHue = (settingsRef.current.hue + deltaTime) % 360;
-        ctx[settingsRef.current.isFill ? "fillStyle" : "strokeStyle"] = `hsla(${adjustedHue}, ${settingsRef.current.saturation}%, ${settingsRef.current.lightness}%, ${settingsRef.current.alpha})`;
+        const adjustedHue = (hue + deltaTime) % 360;
+        ctx[isFill ? "fillStyle" : "strokeStyle"] = `hsla(${adjustedHue}, ${saturation}%, ${lightness}%, ${alpha})`;
 
         ctx.closePath();
-        ctx[settingsRef.current.isFill ? "strokeStyle" : "fillStyle"] = settingsRef.current.bgColor;
+        ctx[isFill ? "strokeStyle" : "fillStyle"] = bgColor;
         ctx.fill();
-        ctx.lineWidth = settingsRef.current.border;
-        if (settingsRef.current.border > 0) {
+        ctx.lineWidth = border;
+        if (border > 0) {
           ctx.stroke();
         }
       };
 
-      const visualize = visualizations[settingsRef.current.shapeType];
+      const visualize = visualizations[shapeType];
       if (visualize) {
-        visualize(ctx, drawShape, settingsRef.current.hue, settingsRef.current);
+        visualize(ctx, drawShape, hue, settingsRef.current);
       }
 
       requestAnimationFrame(draw);
