@@ -91,7 +91,7 @@ export const settingsConfig = [
     label: "Loop type",
     value: "none",
     type: "select",
-    options: ["none", "x", "y"]
+    options: ["none", "x", "y", "spiral"]
   },
   {
     name: "shapeType",

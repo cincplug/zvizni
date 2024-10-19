@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { visualizations } from "../utils/visualizations";
+import { loopTypes } from "../utils/loopTypes";
 
 const Visualizer = ({ analyser, settings, canvasRef }) => {
   const frameRef = useRef(1);
@@ -83,33 +84,17 @@ const Visualizer = ({ analyser, settings, canvasRef }) => {
         shapeType
       } = settingsRef.current;
 
-      const frameLimitX = window.innerWidth;
-      const frameLimitY = window.innerHeight;
-
       frameRef.current += 1;
 
-      if (loopType === "x" && frameRef.current > frameLimitX) {
-        frameRef.current = 0;
-      }
-      if (loopType === "y" && frameRef.current > frameLimitY) {
-        frameRef.current = 0;
-      }
-
-      let x, y;
-      if (loopType === "none") {
-        x = mousePosRef.current.x;
-        y = mousePosRef.current.y;
-      } else if (loopType === "y") {
-        x = mousePosRef.current.x;
-        y = frameRef.current;
-      } else if (loopType === "x") {
-        x = frameRef.current;
-        y = mousePosRef.current.y;
-      }
+      const { x, y } = loopTypes[loopType]({
+        frame: frameRef.current,
+        mousePos: mousePosRef.current
+      });
 
       analyser.getByteFrequencyData(dataArray);
 
-      const averageAmplitude = dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
+      const averageAmplitude =
+        dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
       const seedRadiusValue = averageAmplitude * thickness;
 
       const drawShape = (drawFn) => {
@@ -118,7 +103,10 @@ const Visualizer = ({ analyser, settings, canvasRef }) => {
 
         ctx.beginPath();
 
-        const pointsInFullCircle = dataArray.slice(startFrequency, endFrequency);
+        const pointsInFullCircle = dataArray.slice(
+          startFrequency,
+          endFrequency
+        );
         const totalPoints = pointsInFullCircle.length;
 
         pointsInFullCircle.forEach((value, i) => {
@@ -137,7 +125,9 @@ const Visualizer = ({ analyser, settings, canvasRef }) => {
         });
 
         const adjustedHue = (hue + deltaTime) % 360;
-        ctx[isFill ? "fillStyle" : "strokeStyle"] = `hsla(${adjustedHue}, ${saturation}%, ${lightness}%, ${alpha})`;
+        ctx[
+          isFill ? "fillStyle" : "strokeStyle"
+        ] = `hsla(${adjustedHue}, ${saturation}%, ${lightness}%, ${alpha})`;
 
         ctx.closePath();
         ctx[isFill ? "strokeStyle" : "fillStyle"] = bgColor;
