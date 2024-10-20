@@ -2,6 +2,9 @@ import React, { useEffect, useRef } from "react";
 import { visualizations } from "../utils/visualizations";
 import { loopTypes } from "../utils/loopTypes";
 
+const frameLimitX = window.innerWidth;
+const frameLimitY = window.innerHeight;
+
 const Visualizer = ({ analyser, settings, canvasRef }) => {
   const frameRef = useRef(1);
   const lastTimeRef = useRef(0);
@@ -90,6 +93,13 @@ const Visualizer = ({ analyser, settings, canvasRef }) => {
         frame: frameRef.current,
         mousePos: mousePosRef.current
       });
+
+      if (loopType === "x" && frameRef.current > frameLimitX) {
+        frameRef.current = 0;
+      }
+      if (loopType === "y" && frameRef.current > frameLimitY) {
+        frameRef.current = 0;
+      }
 
       analyser.getByteFrequencyData(dataArray);
 
