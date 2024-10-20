@@ -107,50 +107,31 @@ const Visualizer = ({ analyser, settings, canvasRef }) => {
         dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
       const seedRadiusValue = averageAmplitude * thickness;
 
-      const drawShape = (drawFn) => {
-        let prevX = x;
-        let prevY = y;
+      let prevX = x;
+      let prevY = y;
 
-        ctx.beginPath();
+      ctx.beginPath();
 
-        const pointsInFullCircle = dataArray.slice(
-          startFrequency,
-          endFrequency
-        );
-        const totalPoints = pointsInFullCircle.length;
+      const frequencyArray = dataArray.slice(startFrequency, endFrequency);
+      const totalPoints = frequencyArray.length;
 
-        pointsInFullCircle.forEach((value, i) => {
-          const size = Math.max(value * thickness, seedRadiusValue);
-          const angle = (i / totalPoints) * angleRange;
+      frequencyArray.forEach((value, i) => {
+        const size = Math.max(value * thickness, seedRadiusValue);
+        visualizations[shapeType]({ctx, i, totalPoints, x, y, prevX, prevY, size, settings: settingsRef.current});
+        prevX = x;
+        prevY = y;
+      });
 
-          const pointX = x + size * Math.cos(angle);
-          const pointY = y + size * Math.sin(angle);
+      ctx[
+        isFill ? "fillStyle" : "strokeStyle"
+      ] = `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`;
 
-          const avgX = (prevX + pointX) / 2;
-          const avgY = (prevY + pointY) / 2;
-
-          drawFn(avgX, avgY, size);
-          prevX = pointX;
-          prevY = pointY;
-        });
-
-        const adjustedHue = (hue + deltaTime) % 360;
-        ctx[
-          isFill ? "fillStyle" : "strokeStyle"
-        ] = `hsla(${adjustedHue}, ${saturation}%, ${lightness}%, ${alpha})`;
-
-        ctx.closePath();
-        ctx[isFill ? "strokeStyle" : "fillStyle"] = bgColor;
-        ctx.fill();
-        ctx.lineWidth = border;
-        if (border > 0) {
-          ctx.stroke();
-        }
-      };
-
-      const visualize = visualizations[shapeType];
-      if (visualize) {
-        visualize(ctx, drawShape, hue, settingsRef.current);
+      ctx.closePath();
+      ctx[isFill ? "strokeStyle" : "fillStyle"] = bgColor;
+      ctx.fill();
+      ctx.lineWidth = border;
+      if (border > 0) {
+        ctx.stroke();
       }
 
       requestAnimationFrame(draw);
