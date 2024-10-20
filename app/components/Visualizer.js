@@ -1,16 +1,15 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { visualizations } from "../utils/visualizations";
 import { loopTypes } from "../utils/loopTypes";
 
-const frameLimitX = window.innerWidth;
-const frameLimitY = window.innerHeight;
-
 const Visualizer = ({ analyser, settings, canvasRef }) => {
+  const [w, setW] = useState(0);
+  const [h, setH] = useState(0);
   const frameRef = useRef(1);
   const lastTimeRef = useRef(0);
   const mousePosRef = useRef({
-    x: window.innerWidth / 2,
-    y: window.innerHeight / 2
+    x: w / 2,
+    y: h / 2
   });
   const isDrawingRef = useRef(true);
   const settingsRef = useRef(settings);
@@ -20,10 +19,15 @@ const Visualizer = ({ analyser, settings, canvasRef }) => {
   }, [settings]);
 
   useEffect(() => {
+    setW(window.innerWidth);
+    setH(window.innerHeight);
+  }, [settings.loopType]);
+
+  useEffect(() => {
     const canvas = canvasRef.current;
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.width = w;
+    canvas.height = h;
 
     const handleMouseMove = (event) => {
       mousePosRef.current = { x: event.clientX, y: event.clientY };
@@ -58,7 +62,7 @@ const Visualizer = ({ analyser, settings, canvasRef }) => {
       canvas.removeEventListener("touchstart", handleTouchStart);
       canvas.removeEventListener("touchend", handleTouchEnd);
     };
-  }, [canvasRef]);
+  }, [canvasRef, w, h]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -117,7 +121,17 @@ const Visualizer = ({ analyser, settings, canvasRef }) => {
 
       frequencyArray.forEach((value, i) => {
         const size = Math.max(value * thickness, seedRadiusValue);
-        visualizations[shapeType]({ctx, i, totalPoints, x, y, prevX, prevY, size, settings: settingsRef.current});
+        visualizations[shapeType]({
+          ctx,
+          i,
+          totalPoints,
+          x,
+          y,
+          prevX,
+          prevY,
+          size,
+          settings: settingsRef.current
+        });
         prevX = x;
         prevY = y;
       });
