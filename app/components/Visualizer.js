@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { visualizations } from "../utils/visualizations";
 import { loopTypes } from "../utils/loopTypes";
 
+const targetFrameRate = 1000 / 60;
+
 const Visualizer = ({ analyser, settings, canvasRef }) => {
   const [w, setW] = useState(0);
   const [h, setH] = useState(0);
@@ -73,6 +75,12 @@ const Visualizer = ({ analyser, settings, canvasRef }) => {
 
     const draw = (time) => {
       const deltaTime = time - lastTimeRef.current;
+
+      if (deltaTime < targetFrameRate) {
+        requestAnimationFrame(draw);
+        return;
+      }
+
       lastTimeRef.current = time;
 
       const {
@@ -98,10 +106,10 @@ const Visualizer = ({ analyser, settings, canvasRef }) => {
         mousePos: mousePosRef.current
       });
 
-      if (loopType === "x" && frameRef.current > frameLimitX) {
+      if (loopType === "x" && frameRef.current > w) {
         frameRef.current = 0;
       }
-      if (loopType === "y" && frameRef.current > frameLimitY) {
+      if (loopType === "y" && frameRef.current > h) {
         frameRef.current = 0;
       }
 
@@ -152,7 +160,7 @@ const Visualizer = ({ analyser, settings, canvasRef }) => {
     };
 
     requestAnimationFrame(draw);
-  }, [analyser, canvasRef]);
+  }, [analyser, canvasRef, w, h]);
 
   return (
     <canvas
