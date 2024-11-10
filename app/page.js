@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useRef } from "react";
-import Visualizer from "./components/Visualizer";
+import Visualizer2d from "./components/Visualizer2d";
 import Visualizer3d from "./components/Visualizer3d";
 import Menu from "./components/Menu";
 import { settingsConfig } from "./settingsConfig";
@@ -54,7 +54,7 @@ export default function Home() {
   };
 
   const RenderedVisualizer =
-    settings.dimensionMode === "3d" ? Visualizer : Visualizer3d;
+    settings.dimensionMode === "3d" ? Visualizer2d : Visualizer3d;
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-slate-800 text-slate-100">
