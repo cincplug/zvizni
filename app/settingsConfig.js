@@ -101,6 +101,13 @@ export const settingsConfig = [
     options: ["flowers", "squares", "triangles", "circles", "hexagons", "stars"]
   },
   {
+    name: "dimensionMode",
+    label: "Dimensions",
+    value: "2d",
+    type: "select",
+    options: ["2d", "3d"]
+  },
+  {
     name: "bgColor",
     label: "BG Color",
     value: "#1e293b",

@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useRef } from "react";
 import Visualizer from "./components/Visualizer";
+import Visualizer3d from "./components/Visualizer3d";
 import Menu from "./components/Menu";
 import { settingsConfig } from "./settingsConfig";
 
@@ -12,7 +13,7 @@ export default function Home() {
 
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [volume, setVolume] = useState(1);
-  const [visualizationType, setVisualizationType] = useState("flowers");
+  const [_visualizationType, setVisualizationType] = useState("flowers");
   const [analyser, setAnalyser] = useState(null);
   const [settings, setSettings] = useState(defaultSettings);
   const canvasRef = useRef(null);
@@ -52,8 +53,19 @@ export default function Home() {
     }
   };
 
+  const RenderedVisualizer =
+    settings.dimensionMode === "3d" ? Visualizer : Visualizer3d;
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-slate-800 text-slate-100">
+      {isAnalyzing && analyser && (
+        <RenderedVisualizer
+          analyser={analyser}
+          settings={settings}
+          canvasRef={canvasRef}
+        />
+      )}
+
       <Menu
         isAnalyzing={isAnalyzing}
         onAnalysisStateChange={handleAnalysisStateChange}
@@ -65,13 +77,6 @@ export default function Home() {
         clearCanvas={clearCanvas}
         saveCanvas={saveCanvas}
       />
-      {isAnalyzing && analyser && (
-        <Visualizer
-          analyser={analyser}
-          settings={settings}
-          canvasRef={canvasRef}
-        />
-      )}
     </main>
   );
 }
