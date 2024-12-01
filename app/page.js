@@ -54,7 +54,7 @@ export default function Home() {
   };
 
   const RenderedVisualizer =
-    settings.dimensionMode === "3d" ? Visualizer2d : Visualizer3d;
+    settings.dimensionMode === "2d" ? Visualizer2d : Visualizer3d;
 
   return (
     <>
