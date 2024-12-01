@@ -79,17 +79,6 @@ export default function Home() {
           saveCanvas={saveCanvas}
         />
       </main>
-      <footer class="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-xs text-slate-300">
-        By{" "}
-        <a
-          href="https://cincplug.com/"
-          target="_blank"
-          rel="noreferrer noopener"
-          class="underline"
-        >
-          Luka Činč
-        </a>
-      </footer>
     </>
   );
 }
