@@ -120,13 +120,12 @@ const Menu = ({
           )}
         </>
       ) : (
-        <footer class="fixed bottom-2 left-1/2 transform -translate-x-1/2 text-xs text-slate-300">
+        <footer className="fixed bottom-2 left-1/2 transform -translate-x-1/2 text-xs text-slate-300">
           By{" "}
           <a
             href="https://cincplug.com/"
             target="_blank"
             rel="noreferrer noopener"
-            class="underline"
           >
             Luka Činč
           </a>
