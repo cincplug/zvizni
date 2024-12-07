@@ -1,16 +1,13 @@
 import React, { useRef, useState } from "react";
 import Image from "next/image";
-import { settingsConfig } from "../settingsConfig";
 import MenuToggle from "./MenuToggle";
 import { startAnalyzing, stopAnalyzing } from "../utils/analysis";
-import { visualizations } from "../utils/visualizations";
-
-const visualizationModes = Object.keys(visualizations);
 
 const Menu = ({
   isAnalyzing,
   onAnalysisStateChange,
   settings,
+  settingsConfig,
   onSettingsChange,
   clearCanvas,
   saveCanvas

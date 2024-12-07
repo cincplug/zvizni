@@ -1,13 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { visualizations } from "../utils/visualizations";
-import { loopTypes } from "../utils/loopTypes";
 
 const targetFrameRate = 1000 / 60;
 
-const Visualizer = ({ analyser, settings, canvasRef }) => {
+const Visualizer = ({ analyser, settings, loopedSetting, canvasRef }) => {
   const [w, setW] = useState(0);
   const [h, setH] = useState(0);
-  const frameRef = useRef(1);
   const lastTimeRef = useRef(0);
   const mousePosRef = useRef({
     x: w / 2,
@@ -23,7 +21,7 @@ const Visualizer = ({ analyser, settings, canvasRef }) => {
   useEffect(() => {
     setW(window.innerWidth);
     setH(window.innerHeight);
-  }, [settings.loopType]);
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -84,11 +82,9 @@ const Visualizer = ({ analyser, settings, canvasRef }) => {
       lastTimeRef.current = time;
 
       const {
-        loopType,
         thickness,
         startFrequency,
         endFrequency,
-        angleRange,
         hue,
         saturation,
         lightness,
@@ -96,21 +92,16 @@ const Visualizer = ({ analyser, settings, canvasRef }) => {
         isFill,
         border,
         bgColor,
-        shapeType
+        shapeType,
+        loopType
       } = settingsRef.current;
 
-      frameRef.current += 1;
+      const { x, y } = mousePosRef.current;
 
-      const { x, y } = loopTypes[loopType]({
-        frame: frameRef.current,
-        mousePos: mousePosRef.current
-      });
-
-      if (loopType === "x" && frameRef.current > w) {
-        frameRef.current = 0;
-      }
-      if (loopType === "y" && frameRef.current > h) {
-        frameRef.current = 0;
+      if (settingsRef.current[loopType] < loopedSetting.max) {
+        settingsRef.current[loopType] += loopedSetting.step;
+      } else {
+        settingsRef.current[loopType] = loopedSetting.min;
       }
 
       analyser.getByteFrequencyData(dataArray);
@@ -152,6 +143,7 @@ const Visualizer = ({ analyser, settings, canvasRef }) => {
       ctx[isFill ? "strokeStyle" : "fillStyle"] = bgColor;
       ctx.fill();
       ctx.lineWidth = border;
+
       if (border > 0) {
         ctx.stroke();
       }
@@ -160,7 +152,7 @@ const Visualizer = ({ analyser, settings, canvasRef }) => {
     };
 
     requestAnimationFrame(draw);
-  }, [analyser, canvasRef, w, h]);
+  }, [analyser, canvasRef, w, h, loopedSetting]);
 
   return (
     <canvas

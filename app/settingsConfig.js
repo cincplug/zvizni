@@ -75,8 +75,8 @@ export const settingsConfig = [
     name: "border",
     label: "Border",
     min: 0,
-    max: 10,
-    step: 0.1,
+    max: 5,
+    step: 0.5,
     value: 0.5,
     type: "range"
   },
@@ -89,9 +89,9 @@ export const settingsConfig = [
   {
     name: "loopType",
     label: "Loop type",
-    value: "none",
+    value: "hue",
     type: "select",
-    options: ["none", "x", "y", "spiral"]
+    options: []
   },
   {
     name: "shapeType",

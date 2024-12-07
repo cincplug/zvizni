@@ -5,8 +5,20 @@ import Visualizer3d from "./components/Visualizer3d";
 import Menu from "./components/Menu";
 import { settingsConfig } from "./settingsConfig";
 
+const updatedSettingsConfig = settingsConfig.map((setting) => {
+  if (setting.name === "loopType") {
+    return {
+      ...setting,
+      options: settingsConfig
+        .filter((setting) => setting.type === "range")
+        .map((setting) => setting.name)
+    };
+  }
+  return setting;
+});
+
 export default function Home() {
-  const defaultSettings = settingsConfig.reduce((acc, setting) => {
+  const defaultSettings = updatedSettingsConfig.reduce((acc, setting) => {
     acc[setting.name] = setting.value;
     return acc;
   }, {});
@@ -53,6 +65,10 @@ export default function Home() {
     }
   };
 
+  const loopedSetting = settingsConfig.find(
+    (setting) => setting.name === settings.loopType
+  );
+
   const RenderedVisualizer =
     settings.dimensionMode === "2d" ? Visualizer2d : Visualizer3d;
 
@@ -61,22 +77,23 @@ export default function Home() {
       <main className="flex min-h-screen flex-col items-center justify-center bg-slate-800 text-slate-100">
         {isAnalyzing && analyser && (
           <RenderedVisualizer
-            analyser={analyser}
-            settings={settings}
-            canvasRef={canvasRef}
+            {...{ analyser, settings, loopedSetting, canvasRef }}
           />
         )}
 
         <Menu
-          isAnalyzing={isAnalyzing}
+          {...{
+            isAnalyzing,
+            volume,
+            settings,
+            settingsConfig: updatedSettingsConfig,
+            clearCanvas,
+            saveCanvas
+          }}
           onAnalysisStateChange={handleAnalysisStateChange}
           onVisualizationChange={handleVisualizationChange}
-          volume={volume}
           onVolumeChange={handleVolumeChange}
-          settings={settings}
           onSettingsChange={handleSettingsChange}
-          clearCanvas={clearCanvas}
-          saveCanvas={saveCanvas}
         />
       </main>
     </>
