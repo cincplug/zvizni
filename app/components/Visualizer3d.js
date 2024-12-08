@@ -32,29 +32,38 @@ const Visualizer3d = ({ analyser, settings, loopedSetting }) => {
     currentThreeCanvasRef.appendChild(renderer.domElement);
 
     const texture = new THREE.CanvasTexture(canvas);
+    texture.wrapS = THREE.ClampToEdgeWrapping;
+    texture.wrapT = THREE.ClampToEdgeWrapping;
+    texture.repeat.set(1, 1);
     texture.needsUpdate = true;
 
-    const geometry = new THREE.BoxGeometry(5, 5, 5); // Use BoxGeometry for the cube
-    const material = new THREE.MeshBasicMaterial({
+    const geometry = new THREE.BoxGeometry(5, 5, 5);
+    const material = new THREE.MeshPhongMaterial({
       map: texture,
       transparent: true,
-      opacity: 0.5,
-      side: THREE.DoubleSide
+      opacity: 0.9,
+      shininess: 150,
+      specular: new THREE.Color(0xffffff)
     });
     const cube = new THREE.Mesh(geometry, material);
     scene.add(cube);
 
-    camera.position.z = 10;
+    camera.position.set(0, 5, 10);
+    camera.lookAt(0, 0, 0);
+
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
-    const pointLight = new THREE.PointLight(0xffffff, 1);
-    pointLight.position.set(10, 10, 10);
-    scene.add(pointLight);
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+    directionalLight.position.set(10, 10, 10);
+    scene.add(directionalLight);
 
     const controls = new OrbitControls(camera, renderer.domElement);
 
     const animate = () => {
       requestAnimationFrame(animate);
+      cube.rotation.x += 0.001;
+      cube.rotation.y += 0.001;
       texture.needsUpdate = true;
       controls.update();
       renderer.render(scene, camera);
