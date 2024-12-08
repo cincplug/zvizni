@@ -1,147 +1,87 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import Visualizer2d from "./Visualizer2d";
 
-const targetFrameRate = 1000 / 60;
-
-const Visualizer3d = ({ analyser }) => {
-  const threeRenderer = useRef(null);
-  const threeScene = useRef(null);
-  const threeCamera = useRef(null);
-  const containerRef = useRef(null);
-  const lastTimeRef = useRef(0);
+const Visualizer3d = ({ analyser, settings, loopedSetting }) => {
+  const canvasRef = useRef(null);
+  const threeCanvasRef = useRef(null);
+  const [w] = useState(window.innerWidth);
+  const [h] = useState(window.innerHeight);
+  const [isCanvasReady, setIsCanvasReady] = useState(false);
 
   useEffect(() => {
-    const canvas = document.createElement("canvas");
-    containerRef.current.appendChild(canvas);
+    const canvas = canvasRef.current;
+    if (canvas) {
+      canvas.width = w;
+      canvas.height = h;
+      setIsCanvasReady(true);
+    }
+  }, [w, h]);
 
-    threeRenderer.current = new THREE.WebGLRenderer({
-      antialias: true,
-      canvas,
-      alpha: true
-    });
+  useEffect(() => {
+    if (!isCanvasReady) return;
 
-    threeRenderer.current.setSize(window.innerWidth, window.innerHeight);
-    threeRenderer.current.setClearColor(0x000000, 0);
+    const canvas = canvasRef.current;
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, w / h, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 
-    threeScene.current = new THREE.Scene();
+    renderer.setSize(w, h);
+    const currentThreeCanvasRef = threeCanvasRef.current;
+    currentThreeCanvasRef.appendChild(renderer.domElement);
 
-    const cameraDistance = window.innerHeight / 2 + 10;
-    threeCamera.current = new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
-    threeCamera.current.position.z = cameraDistance;
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.needsUpdate = true;
 
-    const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
-    threeScene.current.add(ambientLight);
-
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-    directionalLight.position.set(0, 100, 200).normalize();
-    threeScene.current.add(directionalLight);
-
-    const material = new THREE.MeshStandardMaterial({
-      color: 0xffa500,
-      metalness: 0.8,
-      roughness: 0.2,
+    const geometry = new THREE.BoxGeometry(5, 5, 5); // Use BoxGeometry for the cube
+    const material = new THREE.MeshBasicMaterial({
+      map: texture,
       transparent: true,
-      opacity: 0.6,
+      opacity: 0.5,
+      side: THREE.DoubleSide
     });
+    const cube = new THREE.Mesh(geometry, material);
+    scene.add(cube);
 
-    const createCube = (x, y, size) => {
-      const geometry = new THREE.BoxGeometry(size, size, size);
-      const cube = new THREE.Mesh(geometry, material);
+    camera.position.z = 10;
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(ambientLight);
+    const pointLight = new THREE.PointLight(0xffffff, 1);
+    pointLight.position.set(10, 10, 10);
+    scene.add(pointLight);
 
-      cube.position.set(x, y, 0);
-      threeScene.current.add(cube);
-    };
+    const controls = new OrbitControls(camera, renderer.domElement);
 
-    const stageGeometry = new THREE.BoxGeometry(
-      window.innerWidth,
-      window.innerHeight,
-      100
-    );
-    const stageMaterial = new THREE.MeshBasicMaterial({
-      color: 0xffffff,
-      wireframe: true
-    });
-    const stage = new THREE.Mesh(stageGeometry, stageMaterial);
-    stage.position.z = -10;
-    threeScene.current.add(stage);
-
-    createCube(0, 0, 20);
-
-    const animate = (time) => {
-      const deltaTime = time - lastTimeRef.current;
-      if (deltaTime < targetFrameRate) {
-        requestAnimationFrame(animate);
-        return;
-      }
-
-      lastTimeRef.current = time;
-
-      const bufferLength = analyser.frequencyBinCount;
-      const dataArray = new Uint8Array(bufferLength);
-      analyser.getByteFrequencyData(dataArray);
-
-      const averageAmplitude =
-        dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
-      const scale = (averageAmplitude / 255) * 10 + 5;
-
-      threeRenderer.current.render(threeScene.current, threeCamera.current);
+    const animate = () => {
       requestAnimationFrame(animate);
+      texture.needsUpdate = true;
+      controls.update();
+      renderer.render(scene, camera);
     };
 
     animate();
 
-    const handleMouseMove = (event) => {
-      const x = (event.clientX / window.innerWidth) * 200 - 100;
-      const y = -(event.clientY / window.innerHeight) * 200 + 100;
-
-      const bufferLength = analyser.frequencyBinCount;
-      const dataArray = new Uint8Array(bufferLength);
-      analyser.getByteFrequencyData(dataArray);
-
-      const averageAmplitude =
-        dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
-      const scale = averageAmplitude;
-
-      createCube(x * 5, y * 5, scale * 10);
-    };
-
-    const handleTouchMove = (event) => {
-      const touch = event.touches[0];
-      const x = (touch.clientX / window.innerWidth) * 2 - 1;
-      const y = -(touch.clientY / window.innerHeight) * 2 + 1;
-
-      const bufferLength = analyser.frequencyBinCount;
-      const dataArray = new Uint8Array(bufferLength);
-      analyser.getByteFrequencyData(dataArray);
-
-      const averageAmplitude =
-        dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
-      const scale = (averageAmplitude / 255) * 10 + 5;
-
-      createCube(x * 10, y * 10, scale);
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("touchmove", handleTouchMove);
-
     return () => {
-      canvas.remove();
-      if (threeRenderer.current) threeRenderer.current.dispose();
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("touchmove", handleTouchMove);
+      renderer.dispose();
+      currentThreeCanvasRef.removeChild(renderer.domElement);
     };
-  }, [analyser]);
+  }, [isCanvasReady, w, h]);
 
   return (
-    <div
-      ref={containerRef}
-      className="absolute top-0 left-0 w-full h-full"
-    ></div>
+    <>
+      <Visualizer2d
+        analyser={analyser}
+        settings={settings}
+        loopedSetting={loopedSetting}
+        canvasRef={canvasRef}
+      />
+      <canvas ref={canvasRef} style={{ display: "none" }} />
+      <div
+        ref={threeCanvasRef}
+        className="absolute top-0 left-0 w-full h-full"
+      ></div>
+    </>
   );
 };
 
