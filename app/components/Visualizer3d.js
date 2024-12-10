@@ -16,10 +16,10 @@ const Visualizer3d = ({ analyser }) => {
     const currentThreeCanvasRef = threeCanvasRef.current;
     currentThreeCanvasRef.appendChild(renderer.domElement);
 
-    const geometry = new THREE.TorusGeometry(10, 3, 16, 100);
+    const geometry = new THREE.TorusKnotGeometry(1, 2, 6, 70);
     const material = new THREE.MeshPhongMaterial({
-      color: 0x0077ff,
-      shininess: 100,
+      color: 0x00aaff,
+      shininess: 70,
       specular: 0xffffff
     });
     const torus = new THREE.Mesh(geometry, material);
@@ -49,16 +49,17 @@ const Visualizer3d = ({ analyser }) => {
         dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
 
       const vertices = torus.geometry.attributes.position.array;
-      for (let i = 0; i < vertices.length; i += 3) {
-        const offset = (dataArray[i % bufferLength] / 255) * 2 - 1;
-        vertices[i] += offset * 0.1;
-        vertices[i + 1] += offset * 0.1;
-        vertices[i + 2] += offset * 0.1;
+      for (let i = 0; i < vertices.length; i += 1) {
+        const offset = dataArray[i % bufferLength];
+        vertices[i] += Math.min(
+          200,
+          offset * (averageAmplitude / vertices.length)
+        );
       }
       torus.geometry.attributes.position.needsUpdate = true;
 
-      const colorValue = (averageAmplitude / 255) * 360;
-      torus.material.color.setHSL(colorValue / 360, 1, 0.5);
+      const colorValue = averageAmplitude / 255;
+      torus.material.color.setHSL(colorValue, 1, 0.5);
 
       controls.update();
       renderer.render(scene, camera);
