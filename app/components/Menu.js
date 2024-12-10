@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
-import Image from "next/image";
 import MenuToggle from "./MenuToggle";
+import Footer from "./Footer";
+import SplashScreen from "./SplashScreen";
 import { startAnalyzing, stopAnalyzing } from "../utils/analysis";
 
 const Menu = ({
@@ -117,46 +118,17 @@ const Menu = ({
           )}
         </>
       ) : (
-        <footer className="fixed bottom-2 left-1/2 transform -translate-x-1/2 text-xs text-slate-300">
-          By{" "}
-          <a
-            href="https://cincplug.com/"
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            Luka Činč
-          </a>
-        </footer>
+        <Footer />
       )}
 
       {!isAnalyzing && (
-        <div className="flex flex-col items-center justify-center text-slate-100 p-4 rounded shadow-lg max-w-xs w-full">
-          <div className="text-center">
-            <Image
-              src="/zvizni.png"
-              alt="Zvizni logo"
-              width="768"
-              height="768"
-              priority
-            />
-            <h1 className="text-6xl font-bold text-center">Zvizni</h1>
-            <p className="text-md mb-4">Draw while making some sound</p>
-          </div>
-          <button
-            onClick={() =>
-              startAnalyzing(
-                onAnalysisStateChange,
-                audioContextRef,
-                sourceRef,
-                analyserRef,
-                gainNodeRef
-              )
-            }
-            className="px-4 py-2 rounded bg-blue-500 text-white w-3/4"
-          >
-            Start
-          </button>
-        </div>
+        <SplashScreen
+          onAnalysisStateChange={onAnalysisStateChange}
+          audioContextRef={audioContextRef}
+          sourceRef={sourceRef}
+          analyserRef={analyserRef}
+          gainNodeRef={gainNodeRef}
+        />
       )}
     </div>
   );
