@@ -8,7 +8,7 @@ const Menu = ({
   isAnalyzing,
   onAnalysisStateChange,
   settings,
-  settingsConfig,
+  config,
   onSettingsChange,
   clearCanvas,
   saveCanvas
@@ -39,7 +39,7 @@ const Menu = ({
             <div className="fixed top-0 left-0 right-0 md:left-auto md:w-80 bg-slate-700 text-slate-100 px-2 shadow-lg max-h-1/3 overflow-y-auto">
               <h2 className="mt-2">Zvizni</h2>
               <div className="grid grid-cols-3 gap-2">
-                {settingsConfig.map((setting) => (
+                {config.map((setting) => (
                   <div key={setting.name}>
                     <label className="text-xs truncate">{setting.label}</label>
                     {setting.type === "range" && (

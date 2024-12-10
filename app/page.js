@@ -1,38 +1,55 @@
 "use client";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import dynamic from "next/dynamic";
 import Menu from "./components/Menu";
 import SplashScreen from "./components/SplashScreen";
-import { settingsConfig } from "./settingsConfig";
+import { configCommon } from "./configCommon";
+import { config2d } from "./config2d";
+import { config3d } from "./config3d";
 
-const updatedSettingsConfig = settingsConfig.map((setting) => {
-  if (setting.name === "loopType") {
-    return {
-      ...setting,
-      options: settingsConfig
-        .filter((setting) => setting.type === "range")
-        .map((setting) => setting.name)
-    };
-  }
-  return setting;
-});
+const getConfig = (visualizationType) => {
+  const specificConfig = visualizationType === "2d" ? config2d : config3d;
+
+  const updatedCommonConfig = configCommon.map((setting) => {
+    if (setting.name === "loopType") {
+      const allRangeInputs = [...configCommon, ...specificConfig].filter(
+        (setting) => setting.type === "range"
+      );
+
+      return {
+        ...setting,
+        options: allRangeInputs.map((setting) => setting.name)
+      };
+    }
+    return setting;
+  });
+
+  return [...updatedCommonConfig, ...specificConfig];
+};
 
 export default function Home() {
-  const defaultSettings = updatedSettingsConfig.reduce((acc, setting) => {
-    acc[setting.name] = setting.value;
-    return acc;
-  }, {});
-
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [volume, setVolume] = useState(1);
   const [visualizationType, setVisualizationType] = useState(null);
   const [analyser, setAnalyser] = useState(null);
-  const [settings, setSettings] = useState(defaultSettings);
+  const [settings, setSettings] = useState({});
   const canvasRef = useRef(null);
   const audioContextRef = useRef(null);
   const sourceRef = useRef(null);
   const analyserRef = useRef(null);
   const gainNodeRef = useRef(null);
+
+  useEffect(() => {
+    if (visualizationType) {
+      const config = getConfig(visualizationType);
+      const reducedConfig = config.reduce((acc, setting) => {
+        acc[setting.name] = setting.value;
+        return acc;
+      }, {});
+
+      setSettings(reducedConfig);
+    }
+  }, [visualizationType]);
 
   const handleAnalysisStateChange = (isAnalyzing, analyser) => {
     setIsAnalyzing(isAnalyzing);
@@ -65,7 +82,7 @@ export default function Home() {
     }
   };
 
-  const loopedSetting = settingsConfig.find(
+  const loopedSetting = configCommon.find(
     (setting) => setting.name === settings.loopType
   );
 
@@ -73,6 +90,8 @@ export default function Home() {
     visualizationType === "2d"
       ? dynamic(() => import("./components/Visualizer2d"))
       : dynamic(() => import("./components/Visualizer3d"));
+
+  const config = getConfig(visualizationType);
 
   return (
     <>
@@ -89,7 +108,7 @@ export default function Home() {
               isAnalyzing,
               volume,
               settings,
-              settingsConfig: updatedSettingsConfig,
+              config,
               clearCanvas,
               saveCanvas
             }}
