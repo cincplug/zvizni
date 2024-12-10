@@ -7,7 +7,8 @@ const SplashScreen = ({
   audioContextRef,
   sourceRef,
   analyserRef,
-  gainNodeRef
+  gainNodeRef,
+  setVisualizationType
 }) => (
   <div className="flex flex-col items-center justify-center text-slate-100 p-4 rounded shadow-lg max-w-xs w-full">
     <div className="text-center">
@@ -21,20 +22,38 @@ const SplashScreen = ({
       <h1 className="text-6xl font-bold text-center">Zvizni</h1>
       <p className="text-md mb-4">Draw while making some sound</p>
     </div>
-    <button
-      onClick={() =>
-        startAnalyzing(
-          onAnalysisStateChange,
-          audioContextRef,
-          sourceRef,
-          analyserRef,
-          gainNodeRef
-        )
-      }
-      className="px-4 py-2 rounded bg-blue-500 text-white w-3/4"
-    >
-      Start
-    </button>
+    <div className="flex space-x-4">
+      <button
+        onClick={() => {
+          setVisualizationType("2d");
+          startAnalyzing(
+            onAnalysisStateChange,
+            audioContextRef,
+            sourceRef,
+            analyserRef,
+            gainNodeRef
+          );
+        }}
+        className="px-4 py-2 rounded bg-blue-500 text-white"
+      >
+        Start 2D
+      </button>
+      <button
+        onClick={() => {
+          setVisualizationType("3d");
+          startAnalyzing(
+            onAnalysisStateChange,
+            audioContextRef,
+            sourceRef,
+            analyserRef,
+            gainNodeRef
+          );
+        }}
+        className="px-4 py-2 rounded bg-green-500 text-white"
+      >
+        Start 3D
+      </button>
+    </div>
   </div>
 );
 

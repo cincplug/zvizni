@@ -1,8 +1,8 @@
 "use client";
 import React, { useState, useRef } from "react";
-import Visualizer2d from "./components/Visualizer2d";
-import Visualizer3d from "./components/Visualizer3d";
+import dynamic from "next/dynamic";
 import Menu from "./components/Menu";
+import SplashScreen from "./components/SplashScreen";
 import { settingsConfig } from "./settingsConfig";
 
 const updatedSettingsConfig = settingsConfig.map((setting) => {
@@ -25,10 +25,14 @@ export default function Home() {
 
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [volume, setVolume] = useState(1);
-  const [_visualizationType, setVisualizationType] = useState("flowers");
+  const [visualizationType, setVisualizationType] = useState(null);
   const [analyser, setAnalyser] = useState(null);
   const [settings, setSettings] = useState(defaultSettings);
   const canvasRef = useRef(null);
+  const audioContextRef = useRef(null);
+  const sourceRef = useRef(null);
+  const analyserRef = useRef(null);
+  const gainNodeRef = useRef(null);
 
   const handleAnalysisStateChange = (isAnalyzing, analyser) => {
     setIsAnalyzing(isAnalyzing);
@@ -37,10 +41,6 @@ export default function Home() {
 
   const handleVolumeChange = (e) => {
     setVolume(e.target.value);
-  };
-
-  const handleVisualizationChange = (type) => {
-    setVisualizationType(type);
   };
 
   const handleSettingsChange = (updatedSettings) => {
@@ -70,7 +70,9 @@ export default function Home() {
   );
 
   const RenderedVisualizer =
-    settings.dimensionMode === "2d" ? Visualizer2d : Visualizer3d;
+    visualizationType === "2d"
+      ? dynamic(() => import("./components/Visualizer2d"))
+      : dynamic(() => import("./components/Visualizer3d"));
 
   return (
     <>
@@ -81,20 +83,30 @@ export default function Home() {
           />
         )}
 
-        <Menu
-          {...{
-            isAnalyzing,
-            volume,
-            settings,
-            settingsConfig: updatedSettingsConfig,
-            clearCanvas,
-            saveCanvas
-          }}
-          onAnalysisStateChange={handleAnalysisStateChange}
-          onVisualizationChange={handleVisualizationChange}
-          onVolumeChange={handleVolumeChange}
-          onSettingsChange={handleSettingsChange}
-        />
+        {visualizationType ? (
+          <Menu
+            {...{
+              isAnalyzing,
+              volume,
+              settings,
+              settingsConfig: updatedSettingsConfig,
+              clearCanvas,
+              saveCanvas
+            }}
+            onAnalysisStateChange={handleAnalysisStateChange}
+            onVolumeChange={handleVolumeChange}
+            onSettingsChange={handleSettingsChange}
+          />
+        ) : (
+          <SplashScreen
+            onAnalysisStateChange={handleAnalysisStateChange}
+            audioContextRef={audioContextRef}
+            sourceRef={sourceRef}
+            analyserRef={analyserRef}
+            gainNodeRef={gainNodeRef}
+            setVisualizationType={setVisualizationType}
+          />
+        )}
       </main>
     </>
   );
