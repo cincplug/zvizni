@@ -1,20 +1,26 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
-const Visualizer3d = ({ analyser }) => {
-  const threeCanvasRef = useRef(null);
+const Visualizer3d = ({ analyser, canvasRef, rendererRef }) => {
   const [w] = useState(window.innerWidth);
   const [h] = useState(window.innerHeight);
 
   useEffect(() => {
+    if (!canvasRef.current) return;
+
+    const canvas = canvasRef.current;
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: true,
+      alpha: true
+    });
+    renderer.setSize(w, h);
+
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, w / h, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-
-    renderer.setSize(w, h);
-    const currentThreeCanvasRef = threeCanvasRef.current;
-    currentThreeCanvasRef.appendChild(renderer.domElement);
+    camera.position.set(0, 20, 30);
+    camera.lookAt(0, 0, 0);
 
     const geometry = new THREE.TorusKnotGeometry(1, 2, 6, 70);
     const material = new THREE.MeshPhongMaterial({
@@ -25,9 +31,6 @@ const Visualizer3d = ({ analyser }) => {
     const torus = new THREE.Mesh(geometry, material);
     scene.add(torus);
 
-    camera.position.set(0, 20, 30);
-    camera.lookAt(0, 0, 0);
-
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
 
@@ -35,7 +38,7 @@ const Visualizer3d = ({ analyser }) => {
     directionalLight.position.set(10, 10, 10);
     scene.add(directionalLight);
 
-    const controls = new OrbitControls(camera, renderer.domElement);
+    const controls = new OrbitControls(camera, canvas);
 
     const bufferLength = analyser.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
@@ -67,20 +70,14 @@ const Visualizer3d = ({ analyser }) => {
 
     animate();
 
+    rendererRef.current = { renderer, scene, camera };
+
     return () => {
       renderer.dispose();
-      if (currentThreeCanvasRef) {
-        currentThreeCanvasRef.removeChild(renderer.domElement);
-      }
     };
-  }, [analyser, w, h]);
+  }, [analyser, w, h, canvasRef, rendererRef]);
 
-  return (
-    <div
-      ref={threeCanvasRef}
-      className="absolute top-0 left-0 w-full h-full"
-    ></div>
-  );
+  return null;
 };
 
 export default Visualizer3d;

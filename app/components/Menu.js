@@ -93,12 +93,14 @@ const Menu = ({
                 ))}
               </div>
               <div className="grid grid-cols-3 gap-1 py-2">
-                <button
-                  onClick={clearCanvas}
-                  className="p-1 rounded bg-blue-500 text-white text-xs"
-                >
-                  Clear
-                </button>
+                {config.visualizationType === "2d" && (
+                  <button
+                    onClick={clearCanvas}
+                    className="p-1 rounded bg-blue-500 text-white text-xs"
+                  >
+                    Clear
+                  </button>
+                )}
                 <button
                   onClick={saveCanvas}
                   className="p-1 rounded bg-green-600 text-white text-xs"

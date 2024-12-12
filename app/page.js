@@ -1,11 +1,12 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
 import dynamic from "next/dynamic";
-import Menu from "./components/Menu";
-import SplashScreen from "./components/SplashScreen";
+import { saveCanvas, clearCanvas } from "./utils";
 import { configCommon } from "./configCommon";
 import { config2d } from "./config2d";
 import { config3d } from "./config3d";
+import Menu from "./components/Menu";
+import SplashScreen from "./components/SplashScreen";
 
 const getConfig = (visualizationType) => {
   const specificConfig = visualizationType === "2d" ? config2d : config3d;
@@ -34,6 +35,7 @@ export default function Home() {
   const [analyser, setAnalyser] = useState(null);
   const [settings, setSettings] = useState({});
   const canvasRef = useRef(null);
+  const rendererRef = useRef(null); // Add rendererRef for 3D renderer
   const audioContextRef = useRef(null);
   const sourceRef = useRef(null);
   const analyserRef = useRef(null);
@@ -64,28 +66,6 @@ export default function Home() {
     setSettings(updatedSettings);
   };
 
-  const clearCanvas = () => {
-    const canvas = canvasRef.current;
-    if (canvas) {
-      const ctx = canvas.getContext("2d");
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-  };
-
-  const saveCanvas = () => {
-    const canvas = canvasRef.current;
-    if (canvas) {
-      const link = document.createElement("a");
-      link.download = "visualization.png";
-      link.href = canvas.toDataURL();
-      link.click();
-    }
-  };
-
-  const loopedSetting = configCommon.find(
-    (setting) => setting.name === settings.loopType
-  );
-
   const RenderedVisualizer =
     visualizationType === "2d"
       ? dynamic(() => import("./components/Visualizer2d"))
@@ -97,9 +77,15 @@ export default function Home() {
     <>
       <main className="flex min-h-screen flex-col items-center justify-center bg-slate-800 text-slate-100">
         {isAnalyzing && analyser && (
-          <RenderedVisualizer
-            {...{ analyser, settings, loopedSetting, canvasRef }}
-          />
+          <>
+            <canvas
+              ref={canvasRef}
+              className="absolute top-0 left-0 w-full h-full"
+            />
+            <RenderedVisualizer
+              {...{ analyser, settings, canvasRef, rendererRef }}
+            />
+          </>
         )}
 
         {visualizationType ? (

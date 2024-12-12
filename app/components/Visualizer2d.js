@@ -154,15 +154,7 @@ const Visualizer = ({ analyser, settings, loopedSetting, canvasRef }) => {
     requestAnimationFrame(draw);
   }, [analyser, canvasRef, w, h, loopedSetting]);
 
-  return (
-    <canvas
-      ref={canvasRef}
-      style={{
-        backgroundColor: settings.bgColor
-      }}
-      className="w-screen h-screen"
-    />
-  );
+  return null;
 };
 
 export default Visualizer;
