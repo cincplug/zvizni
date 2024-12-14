@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { visualizations } from "../utils/visualizations";
 
 const targetFrameRate = 1000 / 60;

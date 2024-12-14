@@ -10,10 +10,10 @@ import SplashScreen from "./components/SplashScreen";
 
 const getConfig = (visualizationType) => {
   const specificConfig = visualizationType === "2d" ? config2d : config3d;
-
-  const updatedCommonConfig = configCommon.map((setting) => {
+  const mergedConfig = [...configCommon, ...specificConfig];
+  const configWithLoopType = mergedConfig.map((setting) => {
     if (setting.name === "loopType") {
-      const allRangeInputs = [...configCommon, ...specificConfig].filter(
+      const allRangeInputs = mergedConfig.filter(
         (setting) => setting.type === "range"
       );
 
@@ -25,7 +25,7 @@ const getConfig = (visualizationType) => {
     return setting;
   });
 
-  return [...updatedCommonConfig, ...specificConfig];
+  return configWithLoopType;
 };
 
 export default function Home() {
@@ -35,7 +35,7 @@ export default function Home() {
   const [analyser, setAnalyser] = useState(null);
   const [settings, setSettings] = useState({});
   const canvasRef = useRef(null);
-  const rendererRef = useRef(null); // Add rendererRef for 3D renderer
+  const rendererRef = useRef(null);
   const audioContextRef = useRef(null);
   const sourceRef = useRef(null);
   const analyserRef = useRef(null);
@@ -73,6 +73,9 @@ export default function Home() {
 
   const config = getConfig(visualizationType);
 
+  const loopedSetting =
+    config.find((setting) => setting.name === settings.loopType) || null;
+
   return (
     <>
       <main className="flex min-h-screen flex-col items-center justify-center bg-slate-800 text-slate-100">
@@ -83,7 +86,7 @@ export default function Home() {
               className="absolute top-0 left-0 w-full h-full"
             />
             <RenderedVisualizer
-              {...{ analyser, settings, canvasRef, rendererRef }}
+              {...{ analyser, settings, canvasRef, loopedSetting, rendererRef }}
             />
           </>
         )}
