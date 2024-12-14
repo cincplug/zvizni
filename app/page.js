@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
 import dynamic from "next/dynamic";
-import { saveCanvas, clearCanvas } from "./utils";
 import { configCommon } from "./configCommon";
 import { config2d } from "./config2d";
 import { config3d } from "./config3d";
@@ -78,7 +77,10 @@ export default function Home() {
 
   return (
     <>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-slate-800 text-slate-100">
+      <main
+        className="flex min-h-screen flex-col items-center justify-center bg-slate-800 text-slate-100"
+        style={{ background: settings.bgColor }}
+      >
         {isAnalyzing && analyser && (
           <>
             <canvas
@@ -97,9 +99,7 @@ export default function Home() {
               isAnalyzing,
               volume,
               settings,
-              config,
-              clearCanvas,
-              saveCanvas
+              config
             }}
             onAnalysisStateChange={handleAnalysisStateChange}
             onVolumeChange={handleVolumeChange}

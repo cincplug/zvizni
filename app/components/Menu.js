@@ -2,16 +2,13 @@ import React, { useRef, useState } from "react";
 import MenuToggle from "./MenuToggle";
 import Footer from "./Footer";
 import SplashScreen from "./SplashScreen";
-import { startAnalyzing, stopAnalyzing } from "../utils/analysis";
 
 const Menu = ({
   isAnalyzing,
   onAnalysisStateChange,
   settings,
   config,
-  onSettingsChange,
-  clearCanvas,
-  saveCanvas
+  onSettingsChange
 }) => {
   const [isMenuVisible, setIsMenuVisible] = useState(true);
   const audioContextRef = useRef(null);
@@ -41,7 +38,9 @@ const Menu = ({
               <div className="grid grid-cols-3 gap-2">
                 {config.map((setting) => (
                   <div key={setting.name}>
-                    <label className="text-xs truncate">{setting.label}</label>
+                    <label className="text-xs truncate w-full block">
+                      {setting.label}
+                    </label>
                     {setting.type === "range" && (
                       <>
                         <input
@@ -91,30 +90,6 @@ const Menu = ({
                     )}
                   </div>
                 ))}
-              </div>
-              <div className="grid grid-cols-3 gap-1 py-2">
-                {config.visualizationType === "2d" && (
-                  <button
-                    onClick={clearCanvas}
-                    className="p-1 rounded bg-blue-500 text-white text-xs"
-                  >
-                    Clear
-                  </button>
-                )}
-                <button
-                  onClick={saveCanvas}
-                  className="p-1 rounded bg-green-600 text-white text-xs"
-                >
-                  Save
-                </button>
-                <button
-                  onClick={() =>
-                    stopAnalyzing(onAnalysisStateChange, audioContextRef)
-                  }
-                  className="p-1 rounded bg-red-500 text-white text-xs"
-                >
-                  Stop
-                </button>
               </div>
             </div>
           )}
