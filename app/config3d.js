@@ -59,9 +59,9 @@ export const config3d = [
   {
     name: "spacing",
     label: "Spacing",
-    min: 1,
-    max: 20,
-    step: 1,
+    min: 3,
+    max: 7,
+    step: 0.1,
     value: 5,
     type: "range"
   },
@@ -69,7 +69,7 @@ export const config3d = [
     name: "sphereRadius",
     label: "Radius",
     min: 1,
-    max: 10,
+    max: 50,
     step: 0.1,
     value: 5,
     type: "range"

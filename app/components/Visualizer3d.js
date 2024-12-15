@@ -28,28 +28,17 @@ const createLights = (scene) => {
   scene.add(directionalLight);
 };
 
-const createSphere = (settings, position = { x: 0, y: 0, z: 0 }) => {
-  const {
-    color,
-    shininess,
-    specular,
-    sphereRadius,
-    sphereWidthSegments,
-    sphereHeightSegments
-  } = settings;
-  const geometry = new THREE.SphereGeometry(
-    sphereRadius,
-    sphereWidthSegments,
-    sphereHeightSegments
-  );
-  const material = new THREE.MeshPhongMaterial({
+const createCylinder = (settings, radius, position = { x: 0, y: 0, z: 0 }) => {
+  const { color } = settings;
+  const geometry = new THREE.CylinderGeometry(radius, radius, 10, 32);
+  const material = new THREE.MeshBasicMaterial({
     color: new THREE.Color(color),
-    shininess,
-    specular: new THREE.Color(specular)
+    wireframe: true
   });
-  const sphere = new THREE.Mesh(geometry, material);
-  sphere.position.set(position.x, position.y, position.z);
-  return sphere;
+  const cylinder = new THREE.Mesh(geometry, material);
+  cylinder.position.set(position.x, position.y, position.z);
+  cylinder.rotation.z = Math.PI / 2;
+  return cylinder;
 };
 
 const updateVertices = (
@@ -120,7 +109,7 @@ const Visualizer3d = ({ analyser, settings, canvasRef, rendererRef }) => {
   const [w] = useState(window.innerWidth);
   const [h] = useState(window.innerHeight);
   const settingsRef = useRef(settings);
-  const spheresRef = useRef([]);
+  const cylindersRef = useRef([]);
   const vertexCountRef = useRef(0);
   const cameraRef = useRef(null);
   const controlsRef = useRef(null);
@@ -142,9 +131,9 @@ const Visualizer3d = ({ analyser, settings, canvasRef, rendererRef }) => {
 
     createLights(scene);
 
-    const initialSphere = createSphere(settingsRef.current);
-    scene.add(initialSphere);
-    spheresRef.current.push(initialSphere);
+    const initialCylinder = createCylinder(settingsRef.current);
+    scene.add(initialCylinder);
+    cylindersRef.current.push(initialCylinder);
 
     const controls = new OrbitControls(camera, canvas);
     controlsRef.current = controls;
@@ -153,9 +142,9 @@ const Visualizer3d = ({ analyser, settings, canvasRef, rendererRef }) => {
     const dataArray = new Uint8Array(bufferLength);
 
     let lastFrameTime = 0;
-    let lastSphereAddTime = 0;
-    const targetFrameTime = 1000 / 60; // Default to 60 FPS
-    const sphereAddInterval = settingsRef.current.sphereAddInterval;
+    let lastCylinderAddTime = 0;
+    const targetFrameTime = 1000 / 60;
+    const cylinderAddInterval = settingsRef.current.sphereAddInterval;
 
     const animate = (time) => {
       requestAnimationFrame(animate);
@@ -171,32 +160,37 @@ const Visualizer3d = ({ analyser, settings, canvasRef, rendererRef }) => {
       const dominantFrequencyIndex = dataArray.indexOf(Math.max(...dataArray));
       const dominantFrequency = dominantFrequencyIndex / bufferLength;
 
-      let currentSphere = spheresRef.current[spheresRef.current.length - 1];
+      let currentCylinder =
+        cylindersRef.current[cylindersRef.current.length - 1];
       updateVertices(
-        currentSphere.geometry.attributes.position.array,
+        currentCylinder.geometry.attributes.position.array,
         dataArray,
         dominantFrequency,
         settingsRef.current.vertDispLimit,
         averageAmplitude,
         settingsRef.current.vertexChangeLimit
       );
-      currentSphere.geometry.attributes.position.needsUpdate = true;
+      currentCylinder.geometry.attributes.position.needsUpdate = true;
 
       vertexCountRef.current +=
-        currentSphere.geometry.attributes.position.array.length / 3;
-      if (time - lastSphereAddTime >= sphereAddInterval) {
-        lastSphereAddTime = time;
+        currentCylinder.geometry.attributes.position.array.length / 3;
+      if (time - lastCylinderAddTime >= cylinderAddInterval) {
+        lastCylinderAddTime = time;
         vertexCountRef.current = 0;
         const newPosition = {
-          x: currentSphere.position.x + settingsRef.current.spacing,
-          y: currentSphere.position.y,
-          z: currentSphere.position.z
+          x: currentCylinder.position.x + settingsRef.current.spacing,
+          y: currentCylinder.position.y,
+          z: currentCylinder.position.z
         };
-        const newSphere = createSphere(settingsRef.current, newPosition);
-        scene.add(newSphere);
-        spheresRef.current.push(newSphere);
+        const radius = averageAmplitude;
+        const newCylinder = createCylinder(
+          settingsRef.current,
+          radius,
+          newPosition
+        );
+        scene.add(newCylinder);
+        cylindersRef.current.push(newCylinder);
 
-        // Set the target position and lookAt for the camera
         targetPositionRef.current.set(
           newPosition.x,
           camera.position.y,
@@ -205,13 +199,12 @@ const Visualizer3d = ({ analyser, settings, canvasRef, rendererRef }) => {
         targetLookAtRef.current.set(newPosition.x, 0, 0);
       }
 
-      // Linearly interpolate the camera position and lookAt
-      const delta = 0.05; // Adjust this value to control the speed of the transition
+      const delta = 0.05;
       camera.position.lerp(targetPositionRef.current, delta);
       controls.target.lerp(targetLookAtRef.current, delta);
       controls.update();
 
-      currentSphere.material.color.set(settingsRef.current.color);
+      currentCylinder.material.color.set(settingsRef.current.color);
 
       renderer.render(scene, camera);
     };
