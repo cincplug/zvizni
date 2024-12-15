@@ -1,5 +1,14 @@
 export const config3d = [
   {
+    name: "sphereAddInterval",
+    label: "Interval",
+    min: 10,
+    max: 3000,
+    step: 1,
+    value: 1000,
+    type: "range"
+  },
+  {
     name: "shininess",
     label: "Shine",
     min: 0,

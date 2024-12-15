@@ -152,8 +152,17 @@ const Visualizer3d = ({ analyser, settings, canvasRef, rendererRef }) => {
     const bufferLength = analyser.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
 
-    const animate = () => {
+    let lastFrameTime = 0;
+    let lastSphereAddTime = 0;
+    const targetFrameTime = 1000 / 60; // Default to 60 FPS
+    const sphereAddInterval = settingsRef.current.sphereAddInterval;
+
+    const animate = (time) => {
       requestAnimationFrame(animate);
+
+      const deltaTime = time - lastFrameTime;
+      if (deltaTime < targetFrameTime) return;
+      lastFrameTime = time;
 
       analyser.getByteFrequencyData(dataArray);
 
@@ -175,7 +184,8 @@ const Visualizer3d = ({ analyser, settings, canvasRef, rendererRef }) => {
 
       vertexCountRef.current +=
         currentSphere.geometry.attributes.position.array.length / 3;
-      if (vertexCountRef.current >= settingsRef.current.maxVertices) {
+      if (time - lastSphereAddTime >= sphereAddInterval) {
+        lastSphereAddTime = time;
         vertexCountRef.current = 0;
         const newPosition = {
           x: currentSphere.position.x + settingsRef.current.spacing,
