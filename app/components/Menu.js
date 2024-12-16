@@ -17,10 +17,10 @@ const Menu = ({
   const gainNodeRef = useRef(null);
 
   const handleChange = (e) => {
-    const { name, value, type } = e.target;
+    const { name, value, type, checked } = e.target;
     onSettingsChange((prevSettings) => ({
       ...prevSettings,
-      [name]: type === "checkbox" ? e.target.checked : value
+      [name]: type === "checkbox" ? checked : value
     }));
   };
 

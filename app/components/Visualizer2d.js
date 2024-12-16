@@ -95,7 +95,10 @@ const Visualizer2d = ({ analyser, settings, canvasRef, loopedSetting }) => {
       }
 
       lastTimeRef.current = time;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (settingsRef.current.doesRefresh) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
 
       const barWidth = canvas.width / bufferLength;
       const barHeightScale = canvas.height / 2 / 255;
