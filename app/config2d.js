@@ -1,5 +1,40 @@
 export const config2d = [
   {
+    name: "shapeType",
+    label: "Shape type",
+    value: "flowers",
+    type: "select",
+    options: ["flowers", "squares", "triangles", "circles", "hexagons", "stars"]
+  },
+  {
+    name: "composite",
+    label: "Composite",
+    value: "source-over",
+    type: "select",
+    options: [
+      "source-over",
+      "destination-out",
+      "destination-atop",
+      "lighter",
+      "copy",
+      "xor",
+      "multiply",
+      "screen",
+      "overlay",
+      "darken",
+      "lighten",
+      "color-dodge",
+      "color-burn",
+      "hard-light",
+      "soft-light",
+      "difference",
+      "exclusion",
+      "hue",
+      "saturation",
+      "color"
+    ]
+  },
+  {
     name: "startFrequency",
     label: "Start Freq",
     min: 0,
@@ -85,40 +120,5 @@ export const config2d = [
     label: "Fill",
     value: true,
     type: "checkbox"
-  },
-  {
-    name: "shapeType",
-    label: "Shape type",
-    value: "flowers",
-    type: "select",
-    options: ["flowers", "squares", "triangles", "circles", "hexagons", "stars"]
-  },
-  {
-    name: "composite",
-    label: "Composite",
-    value: "source-over",
-    type: "select",
-    options: [
-      "source-over",
-      "destination-out",
-      "destination-atop",
-      "lighter",
-      "copy",
-      "xor",
-      "multiply",
-      "screen",
-      "overlay",
-      "darken",
-      "lighten",
-      "color-dodge",
-      "color-burn",
-      "hard-light",
-      "soft-light",
-      "difference",
-      "exclusion",
-      "hue",
-      "saturation",
-      "color"
-    ]
   }
 ];

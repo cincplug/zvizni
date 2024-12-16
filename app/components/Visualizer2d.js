@@ -1,86 +1,25 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { visualizations } from "../utils/visualizations";
 
 const targetFrameRate = 1000 / 60;
 
-const Visualizer2d = ({ analyser, settings, loopedSetting, canvasRef }) => {
-  const [w, setW] = useState(0);
-  const [h, setH] = useState(0);
+const Visualizer2d = ({ analyser, settings, canvasRef, loopedSetting }) => {
   const lastTimeRef = useRef(0);
-  const mousePosRef = useRef({
-    x: w / 2,
-    y: h / 2
-  });
-  const isDrawingRef = useRef(true);
   const settingsRef = useRef(settings);
 
   useEffect(() => {
-    settingsRef.current = settings;
-  }, [settings]);
+    if (!analyser || !canvasRef.current) return;
 
-  useEffect(() => {
-    setW(window.innerWidth);
-    setH(window.innerHeight);
-  }, []);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-
-    canvas.width = w;
-    canvas.height = h;
-
-    const handleMouseMove = (event) => {
-      mousePosRef.current = { x: event.clientX, y: event.clientY };
-    };
-
-    const handleTouchMove = (event) => {
-      event.preventDefault();
-      if (isDrawingRef.current) {
-        const touch = event.touches[0];
-        mousePosRef.current = { x: touch.clientX, y: touch.clientY };
-      }
-    };
-
-    const handleTouchStart = (event) => {
-      event.preventDefault();
-      isDrawingRef.current = true;
-    };
-
-    const handleTouchEnd = (event) => {
-      event.preventDefault();
-      isDrawingRef.current = false;
-    };
-
-    canvas.addEventListener("mousemove", handleMouseMove);
-    canvas.addEventListener("touchmove", handleTouchMove, { passive: false });
-    canvas.addEventListener("touchstart", handleTouchStart, { passive: false });
-    canvas.addEventListener("touchend", handleTouchEnd, { passive: false });
-
-    return () => {
-      canvas.removeEventListener("mousemove", handleMouseMove);
-      canvas.removeEventListener("touchmove", handleTouchMove);
-      canvas.removeEventListener("touchstart", handleTouchStart);
-      canvas.removeEventListener("touchend", handleTouchEnd);
-    };
-  }, [canvasRef, w, h]);
-
-  useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
-
     const bufferLength = analyser.frequencyBinCount;
+
     const dataArray = new Uint8Array(bufferLength);
 
-    const draw = (time) => {
-      const deltaTime = time - lastTimeRef.current;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-      if (deltaTime < targetFrameRate) {
-        requestAnimationFrame(draw);
-        return;
-      }
-
-      lastTimeRef.current = time;
-
+    const getShape = ({ x, y }) => {
       const {
         thickness,
         startFrequency,
@@ -95,8 +34,6 @@ const Visualizer2d = ({ analyser, settings, loopedSetting, canvasRef }) => {
         shapeType,
         loopType
       } = settingsRef.current;
-
-      const { x, y } = mousePosRef.current;
 
       if (settingsRef.current[loopType] < loopedSetting.max) {
         settingsRef.current[loopType] += loopedSetting.step;
@@ -147,12 +84,35 @@ const Visualizer2d = ({ analyser, settings, loopedSetting, canvasRef }) => {
       if (border > 0) {
         ctx.stroke();
       }
+    };
+
+    const draw = (time) => {
+      const deltaTime = time - lastTimeRef.current;
+
+      if (deltaTime < targetFrameRate) {
+        requestAnimationFrame(draw);
+        return;
+      }
+
+      lastTimeRef.current = time;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const barWidth = canvas.width / bufferLength;
+      const barHeightScale = canvas.height / 2 / 255;
+
+      for (let i = 0; i < bufferLength; i++) {
+        const barHeight = dataArray[i] * barHeightScale;
+        const x = i * barWidth;
+
+        const y = canvas.height / 2 - barHeight / 2;
+        getShape({ x, y });
+      }
 
       requestAnimationFrame(draw);
     };
 
-    requestAnimationFrame(draw);
-  }, [analyser, canvasRef, w, h, loopedSetting]);
+    draw();
+  }, [analyser, canvasRef, loopedSetting]);
 
   return null;
 };
