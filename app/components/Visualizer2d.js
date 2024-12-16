@@ -3,7 +3,7 @@ import { visualizations } from "../utils/visualizations";
 
 const targetFrameRate = 1000 / 60;
 
-const Visualizer = ({ analyser, settings, loopedSetting, canvasRef }) => {
+const Visualizer2d = ({ analyser, settings, loopedSetting, canvasRef }) => {
   const [w, setW] = useState(0);
   const [h, setH] = useState(0);
   const lastTimeRef = useRef(0);
@@ -157,4 +157,4 @@ const Visualizer = ({ analyser, settings, loopedSetting, canvasRef }) => {
   return null;
 };
 
-export default Visualizer;
+export default Visualizer2d;

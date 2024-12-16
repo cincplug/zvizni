@@ -30,7 +30,7 @@ const createLights = (scene) => {
 
 const createCylinder = (settings, radius, position = { x: 0, y: 0, z: 0 }) => {
   const { color } = settings;
-  const geometry = new THREE.CylinderGeometry(radius, radius, 10, 32);
+  const geometry = new THREE.CylinderGeometry(radius, radius, 10, 20);
   const material = new THREE.MeshBasicMaterial({
     color: new THREE.Color(color),
     wireframe: true
@@ -46,8 +46,7 @@ const updateVertices = (
   dataArray,
   dominantFrequency,
   vertDispLimit,
-  averageAmplitude,
-  vertexChangeLimit
+  averageAmplitude
 ) => {
   for (let i = 0; i < vertices.length; i += 3) {
     const offset = dataArray[i % dataArray.length];
@@ -57,55 +56,31 @@ const updateVertices = (
       const directionZ = Math.sin(dominantFrequency * Math.PI * 2 - i);
 
       const length = Math.sqrt(
-        vertices[i] ** 2 + vertices[i + 1] ** 2 + vertices[i + 2] ** 2
+        vertices[i] ** 2 + vertices[i + 1] ** 2 + vertices[i + 2] * 2
       );
-      if (length > vertexChangeLimit) {
-        vertices[i] +=
-          directionX *
-          Math.min(
-            vertDispLimit,
-            offset * (averageAmplitude / vertices.length)
-          ) *
-          Math.cos(Math.PI / 4);
-        vertices[i + 1] +=
-          directionY *
-          Math.min(
-            vertDispLimit,
-            offset * (averageAmplitude / vertices.length)
-          ) *
-          Math.cos(Math.PI / 4);
-        vertices[i + 2] +=
-          directionZ *
-          Math.min(
-            vertDispLimit,
-            offset * (averageAmplitude / vertices.length)
-          ) *
-          Math.cos(Math.PI / 4);
-      } else {
-        vertices[i] +=
-          directionX *
-          Math.min(
-            vertDispLimit,
-            offset * (averageAmplitude / vertices.length)
-          );
-        vertices[i + 1] +=
-          directionY *
-          Math.min(
-            vertDispLimit,
-            offset * (averageAmplitude / vertices.length)
-          );
-        vertices[i + 2] +=
-          directionZ *
-          Math.min(
-            vertDispLimit,
-            offset * (averageAmplitude / vertices.length)
-          );
-      }
+      vertices[i] +=
+        directionX *
+        Math.min(vertDispLimit, offset * (averageAmplitude / vertices.length)) *
+        Math.cos(Math.PI / 4);
+      vertices[i + 1] +=
+        directionY *
+        Math.min(vertDispLimit, offset * (averageAmplitude / vertices.length)) *
+        Math.cos(Math.PI / 4);
+      vertices[i + 2] +=
+        directionZ *
+        Math.min(vertDispLimit, offset * (averageAmplitude / vertices.length)) *
+        Math.cos(Math.PI / 4);
     }
   }
 };
 
-const Visualizer3d = ({ analyser, settings, canvasRef, rendererRef }) => {
+const Visualizer3d = ({
+  analyser,
+  settings,
+  canvasRef,
+  rendererRef,
+  loopedSetting
+}) => {
   const [w] = useState(window.innerWidth);
   const [h] = useState(window.innerHeight);
   const settingsRef = useRef(settings);
@@ -144,10 +119,16 @@ const Visualizer3d = ({ analyser, settings, canvasRef, rendererRef }) => {
     let lastFrameTime = 0;
     let lastCylinderAddTime = 0;
     const targetFrameTime = 1000 / 60;
-    const cylinderAddInterval = settingsRef.current.sphereAddInterval;
 
     const animate = (time) => {
       requestAnimationFrame(animate);
+      const { addingInterval, loopType } = settingsRef.current;
+
+      if (loopedSetting && settingsRef.current[loopType] < loopedSetting.max) {
+        settingsRef.current[loopType] += loopedSetting.step;
+      } else if (loopedSetting) {
+        settingsRef.current[loopType] = loopedSetting.min;
+      }
 
       const deltaTime = time - lastFrameTime;
       if (deltaTime < targetFrameTime) return;
@@ -174,11 +155,11 @@ const Visualizer3d = ({ analyser, settings, canvasRef, rendererRef }) => {
 
       vertexCountRef.current +=
         currentCylinder.geometry.attributes.position.array.length / 3;
-      if (time - lastCylinderAddTime >= cylinderAddInterval) {
+      if (time - lastCylinderAddTime >= addingInterval) {
         lastCylinderAddTime = time;
         vertexCountRef.current = 0;
         const newPosition = {
-          x: currentCylinder.position.x + settingsRef.current.spacing,
+          x: currentCylinder.position.x + settingsRef.current.radius,
           y: currentCylinder.position.y,
           z: currentCylinder.position.z
         };
@@ -216,7 +197,7 @@ const Visualizer3d = ({ analyser, settings, canvasRef, rendererRef }) => {
     return () => {
       renderer.dispose();
     };
-  }, [analyser, w, h, canvasRef, rendererRef]);
+  }, [analyser, w, h, canvasRef, rendererRef, loopedSetting]);
 
   return null;
 };
