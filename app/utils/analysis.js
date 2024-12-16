@@ -1,10 +1,10 @@
-export const startAnalyzing = (
+export const startAnalyzing = ({
   onAnalysisStateChange,
   audioContextRef,
   sourceRef,
   analyserRef,
   gainNodeRef
-) => {
+}) => {
   audioContextRef.current = new (window.AudioContext ||
     window.webkitAudioContext)();
 
