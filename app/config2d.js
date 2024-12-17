@@ -2,9 +2,9 @@ export const config2d = [
   {
     name: "shapeType",
     label: "Shape type",
-    value: "flowers",
+    value: "zezni",
     type: "select",
-    options: ["flowers", "something"]
+    options: ["zezni", "mazni", "lezni"]
   },
   {
     name: "isFill",

@@ -47,6 +47,7 @@ const Visualizer2d = ({ analyser, settings, canvasRef, loopedSetting }) => {
         dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
       const seedRadiusValue = averageAmplitude * thickness;
 
+      const { width, height } = canvas;
       let prevX = x;
       let prevY = y;
 
@@ -66,6 +67,8 @@ const Visualizer2d = ({ analyser, settings, canvasRef, loopedSetting }) => {
           prevX,
           prevY,
           size,
+          width,
+          height,
           settings: settingsRef.current
         });
         prevX = x;

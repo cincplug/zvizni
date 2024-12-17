@@ -1,5 +1,5 @@
 export const get2dVisualization = {
-  flowers: ({ ctx, i, totalPoints, size, x, y, prevX, prevY, settings }) => {
+  zezni: ({ ctx, i, totalPoints, size, x, y, prevX, prevY, settings }) => {
     const angle = (i / totalPoints) * settings.angleRange;
 
     const pointX = x + size * Math.cos(angle);
@@ -10,15 +10,22 @@ export const get2dVisualization = {
 
     ctx.lineTo(avgX, avgY);
   },
-  something: ({ ctx, i, totalPoints, size, x, y, prevX, prevY, settings }) => {
+  mazni: ({ ctx, i, totalPoints, size, x, y, width, height, settings }) => {
     const angle = (i / totalPoints) * settings.angleRange;
 
-    const pointX = x + size * Math.cos(angle);
-    const pointY = y + size * Math.sin(angle);
+    const sizeIncrement = y / x;
+    const pointX = x + (size - i * sizeIncrement) * Math.cos(angle) - width / 2;
+    const pointY = y - ((size + i / sizeIncrement) * Math.sin(angle)) / 3;
 
-    const avgX = (prevX + pointX) / 2;
-    const avgY = (prevY + pointY) / 2;
+    ctx.lineTo(pointX, pointY);
+  },
+  lezni: ({ ctx, i, totalPoints, size, x, y, width, settings }) => {
+    const angle = (i / totalPoints) * settings.angleRange;
 
-    ctx.quadraticCurveTo(0, avgX, avgY, 0);
+    const sizeIncrement = y / x;
+    const pointX = x + ((size - i * sizeIncrement) % x);
+    const pointY = y - ((size + i / sizeIncrement) * Math.sin(angle)) / 3;
+
+    ctx.lineTo(pointX, pointY);
   }
 };
