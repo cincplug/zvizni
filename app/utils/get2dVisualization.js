@@ -1,4 +1,4 @@
-export const visualizations = {
+export const get2dVisualization = {
   flowers: ({ ctx, i, totalPoints, size, x, y, prevX, prevY, settings }) => {
     const angle = (i / totalPoints) * settings.angleRange;
 
@@ -19,6 +19,6 @@ export const visualizations = {
     const avgX = (prevX + pointX) / 2;
     const avgY = (prevY + pointY) / 2;
 
-    ctx.quadraticCurveTo(avgX, avgY, prevX, prevY);
+    ctx.quadraticCurveTo(0, avgX, avgY, 0);
   }
 };

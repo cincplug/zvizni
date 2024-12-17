@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { visualizations } from "../utils/visualizations";
+import { get2dVisualization } from "../utils/get2dVisualization";
 
 const targetFrameRate = 1000 / 60;
 
@@ -57,7 +57,7 @@ const Visualizer2d = ({ analyser, settings, canvasRef, loopedSetting }) => {
 
       frequencyArray.forEach((value, i) => {
         const size = Math.max(value * thickness, seedRadiusValue);
-        visualizations[shapeType]({
+        get2dVisualization[shapeType]({
           ctx,
           i,
           totalPoints,
