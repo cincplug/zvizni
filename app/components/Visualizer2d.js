@@ -118,7 +118,13 @@ const Visualizer2d = ({ analyser, settings, canvasRef, loopedSetting }) => {
     };
 
     draw();
-  }, [analyser, canvasRef, loopedSetting]);
+  }, [
+    analyser,
+    canvasRef,
+    loopedSetting.max,
+    loopedSetting.min,
+    loopedSetting.step
+  ]);
 
   return null;
 };
