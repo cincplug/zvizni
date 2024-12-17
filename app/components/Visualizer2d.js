@@ -6,18 +6,23 @@ const targetFrameRate = 1000 / 60;
 const Visualizer2d = ({ analyser, settings, canvasRef, loopedSetting }) => {
   const lastTimeRef = useRef(0);
   const settingsRef = useRef(settings);
+  const dataArrayRef = useRef(null);
 
   useEffect(() => {
     if (!analyser || !canvasRef.current) return;
 
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
+
     const bufferLength = analyser.frequencyBinCount;
+    dataArrayRef.current = new Uint8Array(bufferLength);
 
-    const dataArray = new Uint8Array(bufferLength);
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    resizeCanvas();
 
     const getShape = ({ x, y }) => {
       const {
@@ -41,10 +46,11 @@ const Visualizer2d = ({ analyser, settings, canvasRef, loopedSetting }) => {
         settingsRef.current[loopType] = loopedSetting.min;
       }
 
-      analyser.getByteFrequencyData(dataArray);
+      analyser.getByteFrequencyData(dataArrayRef.current);
 
       const averageAmplitude =
-        dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
+        dataArrayRef.current.reduce((sum, value) => sum + value, 0) /
+        dataArrayRef.current.length;
       const seedRadiusValue = averageAmplitude * thickness;
 
       const { width, height } = canvas;
@@ -53,7 +59,10 @@ const Visualizer2d = ({ analyser, settings, canvasRef, loopedSetting }) => {
 
       ctx.beginPath();
 
-      const frequencyArray = dataArray.slice(startFrequency, endFrequency);
+      const frequencyArray = dataArrayRef.current.slice(
+        startFrequency,
+        endFrequency
+      );
       const totalPoints = frequencyArray.length;
 
       frequencyArray.forEach((value, i) => {
@@ -78,7 +87,6 @@ const Visualizer2d = ({ analyser, settings, canvasRef, loopedSetting }) => {
       ctx[
         isFill ? "fillStyle" : "strokeStyle"
       ] = `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`;
-
       ctx.closePath();
       ctx[isFill ? "strokeStyle" : "fillStyle"] = bgColor;
       ctx.fill();
@@ -89,11 +97,13 @@ const Visualizer2d = ({ analyser, settings, canvasRef, loopedSetting }) => {
       }
     };
 
+    let animationFrameId;
+
     const draw = (time) => {
       const deltaTime = time - lastTimeRef.current;
 
       if (deltaTime < targetFrameRate) {
-        requestAnimationFrame(draw);
+        animationFrameId = requestAnimationFrame(draw);
         return;
       }
 
@@ -107,17 +117,24 @@ const Visualizer2d = ({ analyser, settings, canvasRef, loopedSetting }) => {
       const barHeightScale = canvas.height / 2 / 255;
 
       for (let i = 0; i < bufferLength; i++) {
-        const barHeight = dataArray[i] * barHeightScale;
+        const barHeight = dataArrayRef.current[i] * barHeightScale;
         const x = i * barWidth;
 
         const y = canvas.height / 2 - barHeight / 2;
         getShape({ x, y });
       }
 
-      requestAnimationFrame(draw);
+      animationFrameId = requestAnimationFrame(draw);
     };
 
+    window.addEventListener("resize", resizeCanvas);
+
     draw();
+
+    return () => {
+      window.removeEventListener("resize", resizeCanvas);
+      cancelAnimationFrame(animationFrameId);
+    };
   }, [
     analyser,
     canvasRef,
@@ -125,6 +142,10 @@ const Visualizer2d = ({ analyser, settings, canvasRef, loopedSetting }) => {
     loopedSetting.min,
     loopedSetting.step
   ]);
+
+  useEffect(() => {
+    settingsRef.current = settings;
+  }, [settings]);
 
   return null;
 };
