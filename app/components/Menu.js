@@ -35,11 +35,14 @@ const Menu = ({
           {isMenuVisible && (
             <div className="fixed top-0 left-0 right-0 md:left-auto md:w-80 bg-slate-700 text-slate-100 px-2 shadow-lg max-h-1/3 overflow-y-auto">
               <h2 className="mt-2">Zvizni</h2>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-3 gap-3">
                 {config.map((setting) => (
                   <div key={setting.name}>
-                    <label className="text-xs truncate w-full block">
-                      {setting.label}
+                    <label className="text-xs truncate w-full flex justify-between">
+                      <span>{setting.label}</span>
+                      {setting.type === "range" && (
+                        <span>{settings[setting.name]}</span>
+                      )}
                     </label>
                     {setting.type === "range" && (
                       <>
@@ -83,7 +86,7 @@ const Menu = ({
                       >
                         {setting.options.map((option) => (
                           <option key={option} value={option}>
-                            {option.charAt(0).toUpperCase() + option.slice(1)}
+                            {option}
                           </option>
                         ))}
                       </select>

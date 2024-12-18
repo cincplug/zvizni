@@ -16,7 +16,7 @@ export const config3d = [
   },
   {
     name: "vertDispLimit",
-    label: "Vertices limit",
+    label: "Vertices",
     min: 0,
     max: 500,
     step: 1,
