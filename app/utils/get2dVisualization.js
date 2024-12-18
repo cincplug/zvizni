@@ -27,5 +27,14 @@ export const get2dVisualization = {
     const pointY = y - ((size + i / sizeIncrement) * Math.sin(angle)) / 3;
 
     ctx.lineTo(pointX, pointY);
+  },
+  smazni: ({ ctx, i, totalPoints, size, x, y, width, settings }) => {
+    const angle = (i / totalPoints) * settings.angleRange;
+
+    const sizeIncrement = width % x;
+    const pointX = x / (size - i * sizeIncrement) + x;
+    const pointY = y - ((size + i / sizeIncrement) * Math.sin(angle)) / 2;
+
+    ctx.lineTo(pointX, pointY);
   }
 };

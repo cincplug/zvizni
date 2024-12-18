@@ -4,7 +4,7 @@ export const config2d = [
     label: "Shape type",
     value: "zezni",
     type: "select",
-    options: ["zezni", "mazni", "lezni"]
+    options: ["zezni", "lezni", "mazni", "smazni"]
   },
   {
     name: "isFill",
