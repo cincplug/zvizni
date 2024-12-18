@@ -33,7 +33,7 @@ export const get2dVisualization = {
 
     const sizeIncrement = width % x;
     const pointX = x / (size - i * sizeIncrement) + x;
-    const pointY = y - ((size + i / sizeIncrement) * Math.sin(angle)) / 2;
+    const pointY = y - (size + i / sizeIncrement) * Math.sin(angle);
 
     ctx.lineTo(pointX, pointY);
   }
