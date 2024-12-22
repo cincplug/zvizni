@@ -31,6 +31,7 @@ export const get2dVisualization = {
 
     lineTo(pointX, pointY);
   },
+
   mazni: ({ ctx, i, totalPoints, size, x, y, width, height, settings }) => {
     const lineTo = createLineTo(ctx, width, height);
     const angle = (i / totalPoints) * settings.angleRange;
@@ -41,6 +42,7 @@ export const get2dVisualization = {
 
     lineTo(pointX, pointY);
   },
+
   lezni: ({ ctx, i, totalPoints, size, x, y, width, height, settings }) => {
     const lineTo = createLineTo(ctx, width, height);
     const angle = (i / totalPoints) * settings.angleRange;
@@ -51,6 +53,7 @@ export const get2dVisualization = {
 
     lineTo(pointX, pointY);
   },
+
   smazni: ({ ctx, i, totalPoints, size, x, y, width, height, settings }) => {
     const lineTo = createLineTo(ctx, width, height);
     const angle = (i / totalPoints) * settings.angleRange;
@@ -60,5 +63,20 @@ export const get2dVisualization = {
     const pointY = y - (size + i / sizeIncrement) * Math.sin(angle);
 
     lineTo(pointX, pointY);
+  },
+
+  grizni: ({ ctx, i, size, x, y, width, height, prevX, prevY }) => {
+    ctx.moveTo(prevX, prevY);
+    ctx.arc(x, y, size / i, i, Math.PI * 2);
+  },
+
+  zagrizni: ({ ctx, i, size, x, y, width, height, prevX, prevY }) => {
+    ctx.moveTo(prevX, prevY);
+    const clampedY = Math.min(
+      Math.max(Math.cos(y) * size + height / 2, size),
+      height - size
+    );
+    const radius = Math.min(50, size / (i + 1));
+    ctx.arc(x, clampedY, radius, 0, Math.PI * 2);
   }
 };
