@@ -80,8 +80,6 @@ const Visualizer2d = ({ analyser, settings, canvasRef, loopedSetting }) => {
           height,
           settings: settingsRef.current
         });
-        prevX = x;
-        prevY = y;
       });
 
       ctx[
@@ -89,7 +87,7 @@ const Visualizer2d = ({ analyser, settings, canvasRef, loopedSetting }) => {
       ] = `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`;
       ctx.closePath();
       ctx[isFill ? "strokeStyle" : "fillStyle"] = bgColor;
-      ctx.fill();
+      if (isFill) ctx.fill();
       ctx.lineWidth = border;
 
       if (border > 0) {
