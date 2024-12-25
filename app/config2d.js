@@ -7,15 +7,15 @@ export const config2d = [
     options: ["zezni", "lezni", "mazni", "smazni", "grizni", "zagrizni"]
   },
   {
-    name: "isFill",
-    label: "Fill",
-    value: true,
-    type: "checkbox"
-  },
-  {
     name: "doesRefresh",
     label: "Refreshes",
     value: false,
+    type: "checkbox"
+  },
+  {
+    name: "isFill",
+    label: "Fill",
+    value: true,
     type: "checkbox"
   },
   {

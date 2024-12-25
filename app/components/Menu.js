@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import MenuToggle from "./MenuToggle";
 import Footer from "./Footer";
 import SplashScreen from "./SplashScreen";
+import Chips from "./Chips";
 
 const Menu = ({
   isAnalyzing,
@@ -24,6 +25,11 @@ const Menu = ({
     }));
   };
 
+  const nonSelectSettings = config.filter(
+    (setting) => setting.type !== "select"
+  );
+  const selectSettings = config.filter((setting) => setting.type === "select");
+
   return (
     <div className="relative">
       {isAnalyzing ? (
@@ -33,10 +39,9 @@ const Menu = ({
             onClick={() => setIsMenuVisible(!isMenuVisible)}
           />
           {isMenuVisible && (
-            <div className="fixed top-0 left-0 right-0 md:left-auto md:w-80 bg-slate-700 text-slate-100 px-2 shadow-lg max-h-1/3 overflow-y-auto">
-              <h2 className="mt-2">Zvizni</h2>
+            <div className="fixed top-0 left-0 right-0 md:left-auto md:w-80 bg-slate-700 text-slate-100 p-2 shadow-lg max-h-1/3 overflow-y-auto">
               <div className="grid grid-cols-3 gap-3">
-                {config.map((setting) => (
+                {nonSelectSettings.map((setting) => (
                   <div key={setting.name}>
                     <label className="text-xs truncate w-full flex justify-between">
                       <span>{setting.label}</span>
@@ -77,21 +82,15 @@ const Menu = ({
                         className="bg-transparent"
                       />
                     )}
-                    {setting.type === "select" && (
-                      <select
-                        name={setting.name}
-                        value={settings[setting.name]}
-                        onChange={handleChange}
-                        className="max-w-full bg-white text-black text-xs rounded"
-                      >
-                        {setting.options.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    )}
                   </div>
+                ))}
+                {selectSettings.map((setting) => (
+                  <Chips
+                    key={setting.name}
+                    setting={setting}
+                    settings={settings}
+                    onSettingsChange={onSettingsChange}
+                  />
                 ))}
               </div>
             </div>
