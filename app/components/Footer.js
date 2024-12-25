@@ -9,7 +9,7 @@ const Footer = () => (
       rel="noreferrer noopener"
       className="hover:text-blue-500"
     >
-      Luka Činč
+      Luka Činč S.
     </a>
     <a
       href="https://github.com/cincplug/zvizni"
