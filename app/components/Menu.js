@@ -1,6 +1,5 @@
 import React, { useRef, useState } from "react";
 import MenuToggle from "./MenuToggle";
-import Footer from "./Footer";
 import SplashScreen from "./SplashScreen";
 import Chips from "./Chips";
 
@@ -96,9 +95,7 @@ const Menu = ({
             </div>
           )}
         </>
-      ) : (
-        <Footer />
-      )}
+      ) : null}
 
       {!isAnalyzing && (
         <SplashScreen
