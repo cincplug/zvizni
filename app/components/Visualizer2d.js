@@ -111,13 +111,16 @@ const Visualizer2d = ({ analyser, settings, canvasRef, loopedSetting }) => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
 
-      const barWidth = canvas.width / bufferLength;
+      const gap = parseInt(settingsRef.current.gap);
+      const usableWidth = canvas.width - gap * 2;
+      const barWidth = usableWidth / bufferLength;
+
+      analyser.getByteFrequencyData(dataArrayRef.current);
       const barHeightScale = canvas.height / 2 / 255;
 
       for (let i = 0; i < bufferLength; i++) {
         const barHeight = dataArrayRef.current[i] * barHeightScale;
-        const x = i * barWidth;
-
+        const x = gap + i * barWidth; // Start after left gap
         const y = canvas.height / 2 - barHeight / 2;
         getShape({ x, y });
       }

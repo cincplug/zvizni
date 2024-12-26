@@ -11,5 +11,14 @@ export const configCommon = [
     label: "BG Color",
     value: "#1e293b",
     type: "color"
+  },
+  {
+    name: "gap",
+    label: "Gap",
+    min: 0,
+    max: 512,
+    step: 1,
+    value: 60,
+    type: "range"
   }
 ];

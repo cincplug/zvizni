@@ -23,7 +23,7 @@ const SplashScreen = ({
       <div className="text-center">
         <div className="flex items-center justify-between w-full">
           <Image
-            src="/zvizni-splash.png"
+            src="/zvizni-splashi.png"
             alt="Zvizni logo mirror"
             className="w-full h-auto"
             priority
