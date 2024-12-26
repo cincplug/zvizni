@@ -37,8 +37,8 @@ export const get2dVisualization = {
     const angle = (i / totalPoints) * settings.angleRange;
 
     const sizeIncrement = y / x;
-    const pointX = x + (size - i * sizeIncrement) * Math.cos(angle) - width / 2;
-    const pointY = y - ((size + i / sizeIncrement) * Math.sin(angle)) / 3;
+    const pointX = x + (size - i * sizeIncrement) * Math.cos(angle);
+    const pointY = y - ((size + i / sizeIncrement) * Math.sin(angle)) / 4;
 
     lineTo(pointX, pointY);
   },
